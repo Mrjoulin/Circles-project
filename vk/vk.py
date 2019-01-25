@@ -8,7 +8,7 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk.utils import *
 
 logging.info("Get token")
-sess = VkApi(token=os.getenv("VK_TOKEN"))
+sess = VkApi("6ccf486634bd961cd18148534d58c1d2cc892edfdb99c5197edb46c35c2735a8cad7ee8d5cf5e44e91e58")
 api = sess.get_api()
 lp = VkLongPoll(sess)
 
