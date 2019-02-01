@@ -1,10 +1,10 @@
 import logging
-import os
 
 from botal import Botal
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
+
 from vk.utils import *
 
 logging.info("Get token")
