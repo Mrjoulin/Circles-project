@@ -1,4 +1,4 @@
 build:
    docker:
-      web: vk/Dockerfile
+      web: bot/Dockerfile
 
