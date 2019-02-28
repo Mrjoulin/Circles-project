@@ -1,7 +1,7 @@
 import pymongo
 import logging
 
-nameDatabase = 'database'
+nameDatabase = 'circles-database'
 
 
 def connect_to_database_and_get_a_collection(nameDB, nameCollection):
@@ -30,7 +30,7 @@ def add_user(name, surname, email, password):
     logging.info('Inserting a post:' + str(post))
     ins = user.insert_one(post)
     logging.info('Insert info:' + str(ins))
-    return ins.inserted_id
+    return post
 
 
 def is_registered_email(email):

@@ -10,6 +10,8 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+user_information = {'success': False, 'payload': {}}
+
 
 class Main(QWidget):
 
@@ -36,7 +38,7 @@ class Main(QWidget):
 
         # TODO Редизайн приложения
         # TODO Сделать дизайн остальных окон
-        # TODO Сделать больше огирования для отладки
+        # TODO написать функцию - главное меню
 
         self.setGeometry(self.frameGeometry())
         self.move(150, 150)
@@ -59,7 +61,6 @@ class Main(QWidget):
         nameBattons = ['Зарегистрироваться', 'Войти', 'Пропустить']
         for name in nameBattons:
             btn = QPushButton(name, self)
-            btn.resize(2000, 60)
             btn.setStyleSheet("background-color: rgb(223, 209, 21)")
             btn.clicked.connect(self.welcome_button_click)
             buttons.addWidget(btn, 0, Qt.AlignCenter)
@@ -261,12 +262,11 @@ class Main(QWidget):
                 waitMessage.setFont(QFont("Montserrat Bold", 20))
                 self.layout().addWidget(waitMessage)
                 logging.info('Set data in database')
-                status = add_user(name=self.nameRegistrationEdit.text(),
-                                  surname=self.surnameRegistrationEdit.text(),
-                                  email=self.emailRegistrationEdit.text(),
-                                  password=self.passwordRegistrationEdit.text())
-
-                logging.info('Status of insert -' + str(bool(status)))
+                user_information['payload'] = add_user(name=self.nameRegistrationEdit.text(),
+                                                       surname=self.surnameRegistrationEdit.text(),
+                                                       email=self.emailRegistrationEdit.text(),
+                                                       password=self.passwordRegistrationEdit.text())
+                user_information['success'] = True
                 self.close()
                 self.menu()
 
@@ -284,7 +284,6 @@ class Main(QWidget):
                 self.layout().addChildLayout(hbox)
                 logging.error('An error has occurred' + str(e))
 
-            # TODO написать функцию - главное меню
     @pyqtSlot()
     def error_button(self):
         self.close()
@@ -356,6 +355,8 @@ class Main(QWidget):
                 status = check_user(self.emailLoginEdit.text(), self.passwordLoginEdit.text())
                 logging.info('Check status - ' + str(bool(status)))
                 if status is not None:
+                    user_information['success'] = True
+                    user_information['payload'] = status
                     self.close()
                     self.menu()
                 else:
@@ -380,11 +381,82 @@ class Main(QWidget):
 
         logging.info('Menu window started')
         self.init_menu()
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+
         self.setWindowTitle('Menu')
         self.show()
 
     def init_menu(self):
-        self.setGeometry(450, 300, 500, 300)
+        self.setGeometry(300, 200, 800, 500)
+        if user_information['success']:
+            info = user_information['payload']
+            user_status = QLabel(f"Вход выполнен {info['name']} {info['surname']} / {info['email']}")
+
+            user_status.mousePressEvent = self.closeEvent
+        else:
+            user_status = QLabel('Войти | Зарегистрироваться')
+            user_status.mousePressEvent = self.closeEvent
+        user_status.setFont(QFont('Montserrat Medium', 16))
+
+        teacher_option = QLabel('Для решения варианта учителя,\nвведите номер варианта')
+        create_option = QLabel('Вы можете создать свой вариант')
+        auth_tests = QLabel('Или выберете нужный класс для\nтренеровки решения задач')
+
+        teacher_option.setFont(QFont('Montserrat Medium', 16))
+        create_option.setFont(QFont('Montserrat Medium', 16))
+        auth_tests.setFont(QFont('Montserrat Medium', 16))
+
+        self.teacher_option_edit = QLineEdit(self)
+        create_option_button = QPushButton('Создать', self)
+        create_option_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+        create_option_button.clicked.connect(self.create_teacher_option)
+        topics_for_6_7_classes = QPushButton('6-7 класс', self)
+        topics_for_8_9_classes = QPushButton('8-9 класс', self)
+        topics_for_10_11_classes = QPushButton('10-11 класс', self)
+
+        for item in [topics_for_6_7_classes, topics_for_8_9_classes, topics_for_10_11_classes]:
+            item.setStyleSheet("background-color: rgb(223, 209, 21)")
+            item.clicked.connect(self.topics_window)
+
+        info = [
+            [
+                [user_status]
+            ],
+            [
+                [teacher_option, self.teacher_option_edit],
+                [auth_tests]
+            ],
+            [
+                [create_option, create_option_button],
+                [topics_for_6_7_classes, topics_for_8_9_classes, topics_for_10_11_classes]
+            ]
+        ]
+
+        layout = QVBoxLayout(self)
+
+        for items in info:
+            hbox = QHBoxLayout()
+            hbox.setSpacing(40)
+            for item in items:
+                vbox = QVBoxLayout()
+                vbox.setSpacing(20)
+                for val in item:
+                    vbox.addWidget(val)
+                hbox.addLayout(vbox)
+
+            if items[0][0] == user_status:
+                hbox.setAlignment(Qt.AlignRight)
+                self.adjustSize()
+
+            layout.addLayout(hbox)
+
+        self.setLayout(layout)
+
+    def create_teacher_option(self):
+        pass
+
+    def topics_window(self):
+        pass
 
     def closeEvent(self, event):
         sender = self.sender()
