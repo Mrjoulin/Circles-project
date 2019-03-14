@@ -31,14 +31,13 @@ class Main(QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), QColor(self.backgroundRad, self.backgroundGreen, self.backgroundBlue))
         self.setPalette(p)
-        logging.info(f'Set backround rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
+        logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
 
         self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
         self.welcome_window()
 
-        # TODO Редизайн приложения
-        # TODO Сделать дизайн остальных окон
-        # TODO написать функцию - главное меню
+        # TODO Redesign the app
+        # TODO Create a design for other windows
 
         self.setGeometry(self.frameGeometry())
         self.move(150, 150)
@@ -82,6 +81,9 @@ class Main(QWidget):
         #font, ok = QFontDialog.getFont()
         #if ok: print(font.toString())
 
+        buttons_block = QVBoxLayout()
+        buttons_block.setSpacing(10)
+
         for position, name in zip(positions, infoTxt):
 
             label = QLabel(name, self)
@@ -92,18 +94,22 @@ class Main(QWidget):
                 font.setFamily("Montserrat Bold")
                 font.setPointSize(24)
                 font.setBold(True)
+                label.setFont(font)
+                info.addWidget(label, *position)
             elif position[0] == 1:
                 font.setFamily("Montserrat Medium")
                 font.setPointSize(18)
+                label.setFont(font)
+                info.addWidget(label, *position)
             else:
                 label.setAlignment(Qt.AlignCenter)
                 font.setFamily("Montserrat Medium")
                 font.setPointSize(12)
+                label.setFont(font)
+                buttons_block.addWidget(label)
 
-            label.setFont(font)
-            info.addWidget(label, *position)
-
-        info.addLayout(buttons, 4, 0)
+        buttons_block.addLayout(buttons)
+        info.addLayout(buttons_block, 3, 0)
         grid.addWidget(photo, 0, 0)
         grid.addItem(info, 0, 1)
 
@@ -381,32 +387,69 @@ class Main(QWidget):
 
         logging.info('Menu window started')
         self.init_menu()
+
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QColor(self.backgroundRad, self.backgroundGreen, self.backgroundBlue))
+        self.setPalette(p)
+        logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
+
         self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
 
         self.setWindowTitle('Menu')
         self.show()
 
     def init_menu(self):
-        self.setGeometry(300, 200, 800, 500)
+        self.setGeometry(300, 200, 600, 300)
+        user_status_seperator = QLabel(' | ')
         if user_information['success']:
             info = user_information['payload']
-            user_status = QLabel(f"Вход выполнен {info['name']} {info['surname']} / {info['email']}")
+            user_status_sign = QLabel("Вход выполнен:")
+            user_status_name = QLabel(info['name'] + ' ' + info['surname'])
+            user_status_email = QLabel(info['email'])
 
-            user_status.mousePressEvent = self.closeEvent
+            user_status_name.setStyleSheet("text-decoration: underline; color: blue;")
+            user_status_email.setStyleSheet("text-decoration: underline; color: blue;")
+            user_status_name.mousePressEvent = self.closeEvent
+            user_status_email.mousePressEvent = self.closeEvent
+            user_status = [user_status_sign, user_status_name, user_status_seperator, user_status_email]
+
         else:
-            user_status = QLabel('Войти | Зарегистрироваться')
-            user_status.mousePressEvent = self.closeEvent
-        user_status.setFont(QFont('Montserrat Medium', 16))
+            user_status_sign = QLabel('Зарегистрироваться')
+            user_status_login = QLabel('Войти')
+            user_status_sign.setStyleSheet("text-decoration: underline; color: blue;")
+            user_status_login.setStyleSheet("text-decoration: underline; color: blue;")
+            user_status_sign.mousePressEvent = self.welcome_button_click
+            user_status_login.mousePressEvent = self.welcome_button_click
+            user_status = [user_status_sign, user_status_seperator, user_status_login]
+
+        user_profile = QHBoxLayout()
+        user_profile.setSpacing(10)
+        user_profile.addStretch(1)
+        for item in user_status:
+            item.setFont(QFont('Montserrat Medium', 12))
+            item.adjustSize()
+            user_profile.addWidget(item)
+        user_profile.sizeHint()
+
 
         teacher_option = QLabel('Для решения варианта учителя,\nвведите номер варианта')
         create_option = QLabel('Вы можете создать свой вариант')
         auth_tests = QLabel('Или выберете нужный класс для\nтренеровки решения задач')
 
-        teacher_option.setFont(QFont('Montserrat Medium', 16))
-        create_option.setFont(QFont('Montserrat Medium', 16))
-        auth_tests.setFont(QFont('Montserrat Medium', 16))
+        for item in [teacher_option, create_option, auth_tests]:
+            item.setFont(QFont('Montserrat Medium', 16))
+            item.setAlignment(Qt.AlignTop)
+        create_option.setAlignment(Qt.AlignCenter)
 
         self.teacher_option_edit = QLineEdit(self)
+        teacher_option_ok_button = QPushButton('ОК', self)
+        teacher_option_ok_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+        teacher_option_ok_button.adjustSize()
+        teacher_option_widgets = QHBoxLayout()
+        teacher_option_widgets.addWidget(self.teacher_option_edit)
+        teacher_option_widgets.addWidget(teacher_option_ok_button)
+
         create_option_button = QPushButton('Создать', self)
         create_option_button.setStyleSheet("background-color: rgb(223, 209, 21)")
         create_option_button.clicked.connect(self.create_teacher_option)
@@ -416,14 +459,14 @@ class Main(QWidget):
 
         for item in [topics_for_6_7_classes, topics_for_8_9_classes, topics_for_10_11_classes]:
             item.setStyleSheet("background-color: rgb(223, 209, 21)")
-            item.clicked.connect(self.topics_window)
+            item.clicked.connect(self.topics_button_click)
 
         info = [
             [
-                [user_status]
+                [user_profile]
             ],
             [
-                [teacher_option, self.teacher_option_edit],
+                [teacher_option, teacher_option_widgets],
                 [auth_tests]
             ],
             [
@@ -441,22 +484,54 @@ class Main(QWidget):
                 vbox = QVBoxLayout()
                 vbox.setSpacing(20)
                 for val in item:
-                    vbox.addWidget(val)
+                    try:
+                        vbox.addWidget(val)
+                    except Exception as e:
+                        logging.error(e)
+                        vbox.addLayout(val)
                 hbox.addLayout(vbox)
 
-            if items[0][0] == user_status:
-                hbox.setAlignment(Qt.AlignRight)
-                self.adjustSize()
-
             layout.addLayout(hbox)
+
+        #self.adjustSize()
 
         self.setLayout(layout)
 
     def create_teacher_option(self):
         pass
 
-    def topics_window(self):
-        pass
+    def topics_button_click(self):
+        sender = self.sender()
+        logging.info(f"The '{sender.text()}' button was pressed")
+        self.close()
+        self.topics_window(class_of_tasks=sender)
+
+    def topics_window(self, class_of_tasks):
+        super().__init__()
+
+        logging.info('Topics window started')
+        self.init_topics(class_of_tasks=class_of_tasks)
+
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QColor(self.backgroundRad, self.backgroundGreen, self.backgroundBlue))
+        self.setPalette(p)
+        logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
+
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+
+        self.setWindowTitle('Tests')
+        self.show()
+
+    def init_topics(self, class_of_tasks):
+        self.setGeometry(300, 200, 600, 300)
+
+        if class_of_tasks == '8-9 класс':
+            for number_of_task in range(10): # GET for db list tasks
+                titel = QLabel(f'Task №{number_of_task}')
+                # TODO write tasks interface
+                # TODO add to db tasks in collection 'main tasks'
+                # TODO write a method in db to get a tasks ~~
 
     def closeEvent(self, event):
         sender = self.sender()

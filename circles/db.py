@@ -6,7 +6,8 @@ nameDatabase = 'circles-database'
 
 def connect_to_database_and_get_a_collection(nameDB, nameCollection):
     logging.info('Connecting to MongoDB Client')
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    #client = pymongo.MongoClient("mongodb+srv://kvm202.vdsina.ru: 5980/")
+    client = pymongo.MongoClient("mongodb://v108909.hosted-by-vdsina.ru:27017")
 
     logging.info('Get a database:' + nameDB)
     db = client[nameDB]
