@@ -22,6 +22,13 @@ class Tests10Class(Main):
         ]
         try:
             return tests[number_of_task - 1]
+
+            # return statements:
+            # 'find': [number of pages on request]
+            # 'question': question to find
+            # 'answer': answer to question
+            # 'explanation': explanation of task
+
         except Exception as e:
             logging.error('Error: ' + str(e))
             return Exception
@@ -43,6 +50,7 @@ class Tests10Class(Main):
 
         return {
             'find': [find_one, find_two, find_three],
+            'question': 'Коала',
             'answer': answer,
             'explanation': explanation
         }
@@ -55,18 +63,14 @@ class Tests10Class(Main):
         # Дисплей
         find_three = random.randint(200, 800)
         # Смартфон&Дисплей
-        find_four = random.randrange(0, 150)
+        find_four = random.randint(0, 150)
         # Смартфон&Платформа
-        find_five = random.randrange(0, 150)
+        find_five = random.randint(0, 150)
         # Дисплей&Платформа
-        find_six = random.randrange(0, 150)
+        find_six = random.randint(0, 150)
 
         logical_find = [find_four, find_five, find_six]
-        zero = random.choice(logical_find)
-        for i in range(3):
-            if zero == logical_find[i]:
-                logical_find[i] = 0
-                break
+        logical_find[random.randint(0, 2)] = 0
 
         answer = (find_one + find_two + find_three) - (find_four + find_five + find_six)
 
@@ -78,17 +82,58 @@ class Tests10Class(Main):
             text_find = 'Дисплей&Платформа'
 
         explanation = f'Так как {text_find} равен 0, то можно сказать, что эти 2 окружности вовсе не пересекаются.' \
-                      f'Значит, чтобы начйти Смартфон|Дисплей|Платформа, нужно сложить Смартфон с Платформой ' \
+                      f'Значит, чтобы найти Смартфон|Дисплей|Платформа, нужно сложить Смартфон с Платформой ' \
                       f'и с Дисплеем, а после вычесть их пересечения. Получив в ответе {str(answer)}'
 
         return {
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
+            'question': 'Смартфон|Дисплей|Платформа',
             'answer': answer,
             'explanation': explanation
         }
 
     def task_three(self):
-        pass
+        # Гаджеты
+        find_one = random.randint(200, 500)
+        # Часы
+        find_two = random.randint(200, 500)
+        # Док-станция
+        find_three = random.randint(200, 500)
+        # Гаджеты|Док-станция
+        find_four = random.randint(700, 1000)
+        # Гаджеты|Часы
+        find_five = random.randint(700, 1000)
+        # Док-станция|Часы
+        find_six = random.randint(700, 1000)
+
+        logical_find = [find_four, find_five, find_six]
+        sum_find = logical_find[random.randint(0, 2)]
+        if sum_find == find_four:
+            find_four = find_one + find_three
+            text_find = 'Гаджеты|Док-станция'
+            text_question = f'({text_find})&Часы'
+        elif sum_find == find_five:
+            find_five = find_one + find_two
+            text_find = 'Гаджеты|Часы'
+            text_question = f'({text_find})&Док-станция'
+        else:
+            find_six = find_two + find_three
+            text_find = 'Док-станция|Часы'
+            text_question = f'({text_find})&Гаджеты'
+
+        answer = 2*(find_one + find_two + find_three) - find_four - find_five - find_six
+
+        explanation = f'Зная {text_find} и численное значение каждой оркужности, можно найти их пересечение и ' \
+                      f'в итоге получив 0, можно сказать, что эти 2 окружности вовсе не пересекаются. ' \
+                      f'Значит, чтобы найти {text_question}, нужно сложить попарно пересекающиеся окружности ' \
+                      f'и вычисть объединения этих окружностей. Получив в ответе {str(answer)}'
+
+        return {
+            'find': [find_one, find_two, find_three, find_four, find_five, find_six],
+            'question': 'Смартфон|Дисплей|Платформа',
+            'answer': answer,
+            'explanation': explanation
+        }
 
     def task_four(self):
         pass
