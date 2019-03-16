@@ -2,8 +2,10 @@ import sys
 import logging
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import Qt, QRect, pyqtSlot, QObject
-from circles.db import *
+from PyQt5.QtCore import Qt, pyqtSlot
+
+from circles.db.db import *
+from circles.utils.utils import *
 
 logging.basicConfig(
     format='[%(filename)s:%(lineno)s - %(funcName)20s()]%(levelname)s:%(name)s:%(message)s',
@@ -219,22 +221,11 @@ class Main(QWidget):
                     error_status = True
             try:
                 if is_registered_email(self.emailRegistrationEdit.text()):
-                    self.on_error('Ваш адрес эектронной почты уже зарегистрирован')
+                    self.on_error('Ваш адрес электронной почты уже зарегистрирован')
                     self.emailRegistrationEdit.setStyleSheet("background-color: rgb(255, 50, 50)")
                     error_status = True
             except Exception as e:
-                self.delete_items_of_layout(self.layout())
-                errorMessage = QLabel('Извините, возникла какая-то ошибка\nНажмите назад, чтобы вернуться назад', self)
-                errorMessage.setAlignment(Qt.AlignCenter)
-                errorMessage.setFont(QFont("Montserrat Bold", 20))
-                hbox = QHBoxLayout()
-                btn = QPushButton('Назад', self)
-                btn.clicked.connect(self.error_button)
-                hbox.addWidget(btn)
-                hbox.setAlignment(Qt.AlignLeft)
-                self.layout().addWidget(errorMessage)
-                self.layout().addChildLayout(hbox)
-                logging.error('An error has occurred:' + str(e))
+                self.on_exception(e)
 
             if '@' not in self.emailRegistrationEdit.text() or '.' not in self.emailRegistrationEdit.text():
                 self.on_error('Пожалуйста, указывайте ваш действительный почтовый адрес')
@@ -277,18 +268,7 @@ class Main(QWidget):
                 self.menu()
 
             except Exception as e:
-                self.delete_items_of_layout(self.layout())
-                errorMessage = QLabel('Извините, возникла какая-то ошибка\nНажмите назад, чтобы вернуться назад', self)
-                errorMessage.setAlignment(Qt.AlignCenter)
-                errorMessage.setFont(QFont("Montserrat Bold", 20))
-                hbox = QHBoxLayout()
-                btn = QPushButton('Назад', self)
-                btn.clicked.connect(self.error_button)
-                hbox.addWidget(btn)
-                hbox.setAlignment(Qt.AlignLeft)
-                self.layout().addWidget(errorMessage)
-                self.layout().addChildLayout(hbox)
-                logging.error('An error has occurred' + str(e))
+                self.on_exception(e)
 
     @pyqtSlot()
     def error_button(self):
@@ -370,17 +350,7 @@ class Main(QWidget):
                     self.passwordLoginEdit.clear()
                     return
             except Exception as e:
-                self.delete_items_of_layout(self.layout())
-                errorMessage = QLabel('Извините, возникла какая-то ошибка\nНажмите назад, чтобы вернуться назад', self)
-                errorMessage.setAlignment(Qt.AlignCenter)
-                errorMessage.setFont(QFont("Montserrat Bold", 20))
-                hbox = QHBoxLayout()
-                btn = QPushButton('Назад', self)
-                btn.clicked.connect(self.error_button)
-                hbox.addWidget(btn)
-                self.layout().addWidget(errorMessage)
-                self.layout().addChildLayout(hbox)
-                logging.error('An error has occurred : ' + str(e))
+                self.on_exception(e)
 
     def menu(self):
         super().__init__()
@@ -493,8 +463,6 @@ class Main(QWidget):
 
             layout.addLayout(hbox)
 
-        #self.adjustSize()
-
         self.setLayout(layout)
 
     def create_teacher_option(self):
@@ -527,7 +495,37 @@ class Main(QWidget):
         self.setGeometry(300, 200, 600, 300)
 
         if class_of_tasks == '8-9 класс':
-            for number_of_task in range(10): # GET for db list tasks
+            tasks = get_main_tasks(class_to_find=9)
+
+            number_of_task = 1
+            for dictionary in tasks: # GET for db list tasks
+
+                text_task = {
+                    'А': dictionary['text task'][0],
+                    'Б': dictionary['text task'][1],
+                    'В': dictionary['text task'][2],
+                    'Г': dictionary['text task'][3],
+                }
+                logical_signs = {
+                    'А': {'|': 0, '&': 0},
+                    'Б': {'|': 0, '&': 0},
+                    'В': {'|': 0, '&': 0},
+                    'Г': {'|': 0, '&': 0},
+                }
+
+                for key in text_task.keys():
+                    for let in range(len(text_task[key])):
+                        if text_task[key][let + 1] == '(' or text_task[key][let - 1] == ')':
+                            if text_task[key][let] == '|':
+                                logical_signs[key]['|'] += 2
+                            elif text_task[key][let] == '&':
+                                logical_signs[key]['&'] += 2
+                        else:
+                            if text_task[key][let] == '|':
+                                logical_signs[key]['|'] += 1
+                            elif text_task[key][let] == '&':
+                                logical_signs[key]['&'] += 1
+
                 titel = QLabel(f'Task №{number_of_task}')
                 # TODO write tasks interface
                 # TODO add to db tasks in collection 'main tasks'
@@ -561,6 +559,24 @@ class Main(QWidget):
                     widget.setParent(None)
                 else:
                     self.delete_items_of_layout(item.layout())
+
+    def on_exception(self, e):
+        self.delete_items_of_layout(self.layout())
+        if check_internet_connection():
+            error_message = QLabel('Извините, возникла какая-то ошибка\n'
+                                   'Нажмите назад, чтобы вернуться назад', self)
+        else:
+            error_message = QLabel('Пожалуйста, проверьте ваше Интернет соединение\n'
+                                   'Нажмите назад, чтобы вернуться назад', self)
+        error_message.setAlignment(Qt.AlignCenter)
+        error_message.setFont(QFont("Montserrat Bold", 20))
+        hbox = QHBoxLayout()
+        btn = QPushButton('Назад', self)
+        btn.clicked.connect(self.error_button)
+        hbox.addWidget(btn)
+        self.layout().addWidget(error_message)
+        self.layout().addChildLayout(hbox)
+        logging.error('An error has occurred : ' + str(e))
 
     def on_error(self, e):
         logging.error('An error has occurred ' + str(e))

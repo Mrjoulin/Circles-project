@@ -1,5 +1,6 @@
 import pymongo
 import logging
+from openpyxl import load_workbook
 
 nameDatabase = 'circles-database'
 
@@ -55,3 +56,35 @@ def check_user(email, password):
             return usr
     logging.info('User is not found')
     return None
+
+
+def add_main_tasks():
+    tasks = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='tasks')
+    wb_task = load_workbook('./excel/задачиПримерыИванов.xlsx')
+    ws_task = wb_task.active
+
+    for row in ws_task.values:
+        text_task = row[2].split(';')
+        post = {
+            'class': row[0],
+            'theme': row[1],
+            'text task': text_task,
+            'question': row[4]
+        }
+        logging.info('Inserting a post:' + str(post))
+        ins = tasks.insert_one(post)
+        logging.info('Insert info:' + str(ins))
+
+    wb_task.save('./excel/задачиПримерыИванов.xlsx')
+
+
+def get_main_tasks(class_to_find):
+    tasks = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='tasks')
+    logging.info(f'Get tasks to {class_to_find} class')
+    list_of_task = []
+
+    for task in tasks.find():
+        if task['class'] == int(class_to_find):
+            list_of_task.append(task)
+
+    return list_of_task

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2ec08a78-0054-4754-a352-3db9b23da5dc" name="Default Changelist" comment="add bot directory">
-      <change afterPath="$PROJECT_DIR$/resources/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/templates/static/css/style.css" afterDir="false" />
+    <list default="true" id="2ec08a78-0054-4754-a352-3db9b23da5dc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/circles/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/circles/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles/fonts/OFL.txt" beforeDir="false" afterPath="$PROJECT_DIR$/circles/fonts/OFL.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/circles/db/db.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/circles/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/circles/init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/templates/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/resources/templates/static/css/style.css" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,10 +18,13 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/exam_project$sign_up.coverage" NAME="sign_up Coverage Results" MODIFIED="1550680973584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
     <SUITE FILE_PATH="coverage/exam_project$login.coverage" NAME="login Coverage Results" MODIFIED="1550684828272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
+    <SUITE FILE_PATH="coverage/exam_project$table.coverage" NAME="table Coverage Results" MODIFIED="1552227733762" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/project/src/main/java/com/example/controller" />
     <SUITE FILE_PATH="coverage/exam_project$vk.coverage" NAME="vk Coverage Results" MODIFIED="1549028779817" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/vk" />
     <SUITE FILE_PATH="coverage/exam_project$db.coverage" NAME="db Coverage Results" MODIFIED="1551012593752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
+    <SUITE FILE_PATH="coverage/exam_project$utils.coverage" NAME="utils Coverage Results" MODIFIED="1552757698475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles/utils" />
+    <SUITE FILE_PATH="coverage/exam_project$task.coverage" NAME="task Coverage Results" MODIFIED="1551987382897" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/PycharmProjects/src" />
     <SUITE FILE_PATH="coverage/exam_project$circles.coverage" NAME="init Coverage Results" MODIFIED="1551038312978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
-    <SUITE FILE_PATH="coverage/exam_project$init.coverage" NAME="init Coverage Results" MODIFIED="1551375706532" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
+    <SUITE FILE_PATH="coverage/exam_project$init.coverage" NAME="init Coverage Results" MODIFIED="1552661985052" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/circles" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -41,40 +44,50 @@
     <session id="256582761">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="16" />
+          <entry key="project.closed" value="28" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.24" value="1" />
-          <entry key="project.open.time.25" value="1" />
+          <entry key="project.open.time.25" value="2" />
           <entry key="project.open.time.26" value="4" />
           <entry key="project.open.time.27" value="2" />
           <entry key="project.open.time.28" value="1" />
+          <entry key="project.open.time.29" value="1" />
+          <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.30" value="1" />
           <entry key="project.open.time.31" value="2" />
-          <entry key="project.open.time.32" value="1" />
+          <entry key="project.open.time.32" value="2" />
           <entry key="project.open.time.34" value="1" />
+          <entry key="project.open.time.35" value="1" />
+          <entry key="project.open.time.36" value="2" />
           <entry key="project.open.time.37" value="1" />
           <entry key="project.open.time.40" value="1" />
-          <entry key="project.open.time.43" value="1" />
-          <entry key="project.opened" value="18" />
+          <entry key="project.open.time.42" value="1" />
+          <entry key="project.open.time.43" value="2" />
+          <entry key="project.open.time.61" value="1" />
+          <entry key="project.open.time.75" value="1" />
+          <entry key="project.open.time.9" value="1" />
+          <entry key="project.opened" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Procfile" value="15" />
-          <entry key="Python Console" value="40" />
+          <entry key="Python Console" value="55" />
           <entry key="css" value="93" />
           <entry key="dummy" value="124" />
           <entry key="html" value="245" />
-          <entry key="py" value="16043" />
-          <entry key="txt" value="81" />
+          <entry key="json" value="65" />
+          <entry key="py" value="22823" />
+          <entry key="txt" value="167" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="93" />
           <entry key="HTML" value="245" />
-          <entry key="PLAIN_TEXT" value="220" />
-          <entry key="Python" value="16083" />
+          <entry key="JSON" value="65" />
+          <entry key="PLAIN_TEXT" value="306" />
+          <entry key="Python" value="22878" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -83,13 +96,16 @@
           <entry key="Procfile" value="2" />
           <entry key="css" value="3" />
           <entry key="html" value="2" />
+          <entry key="java" value="4" />
           <entry key="jpg" value="2" />
+          <entry key="json" value="3" />
           <entry key="otf" value="2" />
-          <entry key="py" value="22" />
+          <entry key="php" value="1" />
+          <entry key="py" value="28" />
           <entry key="ttf" value="3" />
           <entry key="txt" value="3" />
           <entry key="yaml" value="3" />
-          <entry key="yml" value="1" />
+          <entry key="yml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -98,20 +114,25 @@
           <entry key="Dockerfile" value="3" />
           <entry key="HTML" value="2" />
           <entry key="Image" value="2" />
-          <entry key="PLAIN_TEXT" value="10" />
-          <entry key="Python" value="22" />
-          <entry key="YAML" value="4" />
+          <entry key="JSON" value="3" />
+          <entry key="PHP" value="1" />
+          <entry key="PLAIN_TEXT" value="14" />
+          <entry key="Python" value="28" />
+          <entry key="YAML" value="6" />
         </counts>
       </usages-collector>
     </session>
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="exam-project" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bot/vk/vk.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="40" column="55" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
+            <state relative-caret-position="120">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -122,8 +143,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/exatch-decembrist/vk/vk.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="45" column="50" selection-start-line="45" selection-start-column="50" selection-end-line="45" selection-end-column="50" />
+            <state relative-caret-position="-3027">
+              <caret line="21" column="56" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -132,53 +153,62 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/circles/init.py">
+        <entry file="file://$PROJECT_DIR$/circles/utils/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="604">
-              <caret line="458" column="11" selection-start-line="458" selection-start-column="11" selection-end-line="458" selection-end-column="11" />
-              <folding>
-                <marker date="1551112983314" expanded="true" signature="11954:18905" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="15025:18496" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="17836:17841" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="17879:17898" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="18537:18546" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="19037:19038" ph="..." />
-                <marker date="1551112983314" expanded="true" signature="19039:19040" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/circles/db.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
+            <state relative-caret-position="498">
+              <caret line="118" lean-forward="true" selection-start-line="118" selection-end-line="118" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
-                <marker date="1551375581238" expanded="true" signature="136:137" ph="..." />
-                <marker date="1551375581238" expanded="true" signature="565:712" ph="..." />
-                <marker date="1551375581238" expanded="true" signature="889:1148" ph="..." />
-                <marker date="1551375581238" expanded="true" signature="1180:1185" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="386:391" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="422:431" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="422:677" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="696:1565" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="1584:1593" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="1584:3034" ph="..." />
+                <marker date="1552763166250" expanded="true" signature="3055:3064" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/resources/templates/index.html">
+        <entry file="file://$PROJECT_DIR$/circles/init.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="22" lean-forward="true" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+            <state relative-caret-position="-7883">
+              <caret line="7" column="33" lean-forward="true" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+                <marker date="1552763166190" expanded="true" signature="3981:3986" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="10907:22478" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="13362:21205" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="18049:18050" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="18049:18068" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="18098:18272" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="18312:20607" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="18939:20607" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="21246:21255" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="21640:22478" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="22610:22612" ph="..." />
+                <marker date="1552763166190" expanded="true" signature="22612:22613" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/resources/templates/static/css/style.css">
+        <entry file="file://$PROJECT_DIR$/circles/db/db.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="36" column="14" lean-forward="true" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
+            <state relative-caret-position="285">
+              <caret line="19" selection-start-line="19" selection-end-line="19" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <marker date="1552627351610" expanded="true" signature="171:172" ph="..." />
+                <marker date="1552627351610" expanded="true" signature="692:839" ph="..." />
+                <marker date="1552627351610" expanded="true" signature="1016:1275" ph="..." />
+                <marker date="1552627351610" expanded="true" signature="1307:1312" ph="..." />
+                <marker date="1552627351610" expanded="true" signature="1806:1807" ph="..." />
+                <marker date="1552627351610" expanded="true" signature="2449:2742" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -188,8 +218,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -209,12 +239,18 @@
         <option value="$PROJECT_DIR$/circles/sign_Up.py" />
         <option value="$PROJECT_DIR$/circles/sign_up.py" />
         <option value="$PROJECT_DIR$/circles/login.py" />
-        <option value="$PROJECT_DIR$/circles/init.py" />
-        <option value="$PROJECT_DIR$/circles/db.py" />
         <option value="$PROJECT_DIR$/circles/resources/templates/index.html" />
         <option value="$PROJECT_DIR$/resources/static/css/style.css" />
         <option value="$PROJECT_DIR$/resources/templates/index.html" />
+        <option value="$PROJECT_DIR$/resources/templates/static.json" />
+        <option value="$PROJECT_DIR$/resources/templates/index.php" />
+        <option value="$PROJECT_DIR$/resources/templates/composer.json" />
         <option value="$PROJECT_DIR$/resources/templates/static/css/style.css" />
+        <option value="$USER_HOME$/PycharmProjects/src/task.py" />
+        <option value="$USER_HOME$/project/src/main/java/com/example/controller/table.py" />
+        <option value="$PROJECT_DIR$/circles/db.py" />
+        <option value="$PROJECT_DIR$/circles/init.py" />
+        <option value="$PROJECT_DIR$/circles/utils/utils.py" />
       </list>
     </option>
   </component>
@@ -228,7 +264,7 @@
     <option name="x" value="1366" />
     <option name="y" value="-2" />
     <option name="width" value="1366" />
-    <option name="height" value="743" />
+    <option name="height" value="770" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -236,6 +272,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -248,30 +285,37 @@
               <item name="exam-project" type="462c0819:PsiDirectoryNode" />
               <item name="circles" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="exam-project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="exam-project" type="462c0819:PsiDirectoryNode" />
+              <item name="circles" type="462c0819:PsiDirectoryNode" />
+              <item name="excel" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="postgresql" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/project/src/main/resources/templates/index.html" />
+    <property name="last_opened_file_path" value="$USER_HOME$/library_project" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/resources/templates" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/circles/db" />
       <recent name="$PROJECT_DIR$/resources/templates" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/bot/vk" />
       <recent name="$PROJECT_DIR$/vk" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/resources/templates" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -286,30 +330,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.index.html">
+  <component name="RunManager" selected="Python.utils">
     <configuration name="index.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/exam-project/resources/templates/index.html">
-      <method v="2" />
-    </configuration>
-    <configuration name="db" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="exam-project" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/circles" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/circles/db.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration name="init" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -334,7 +356,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="login" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="table" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="exam-project" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -342,12 +364,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/circles" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../project/src/main/java/com/example/controller" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/circles/login.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../project/src/main/java/com/example/controller/table.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -356,7 +378,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="sign_up" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="task" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="exam-project" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -364,12 +386,34 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/circles" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../PycharmProjects/src" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../PycharmProjects/src/task.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="exam-project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/circles/utils" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/circles/sign_up.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/circles/utils/utils.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -380,18 +424,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.init" />
-      <item itemvalue="Python.sign_up" />
-      <item itemvalue="Python.login" />
-      <item itemvalue="Python.db" />
       <item itemvalue="JavaScript Debug.index.html" />
+      <item itemvalue="Python.task" />
+      <item itemvalue="Python.table" />
+      <item itemvalue="Python.utils" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JavaScript Debug.index.html" />
+        <item itemvalue="Python.utils" />
         <item itemvalue="Python.init" />
-        <item itemvalue="Python.db" />
-        <item itemvalue="Python.login" />
-        <item itemvalue="Python.sign_up" />
+        <item itemvalue="Python.table" />
+        <item itemvalue="Python.task" />
+        <item itemvalue="JavaScript Debug.index.html" />
       </list>
     </recent_temporary>
   </component>
@@ -427,7 +471,21 @@
       <option name="project" value="LOCAL" />
       <updated>1551032264784</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add website and menu circles">
+      <created>1551383132143</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1551383132143</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add tasks_window and website with app">
+      <created>1552593041270</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1552593041270</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView">
@@ -444,12 +502,12 @@
     <frame x="1366" y="-2" width="1366" height="770" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49095023" visible="true" weight="0.23712121" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4911032" visible="true" weight="0.19015151" />
       <window_info id="Structure" order="1" sideWeight="0.5090498" side_tool="true" weight="0.22575757" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info id="Favorites" order="2" sideWeight="0.50889677" side_tool="true" weight="0.23712121" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3296875" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49772727" weight="0.4078125" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49621212" weight="0.425" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -457,20 +515,23 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5022727" side_tool="true" weight="0.5252032" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49772727" weight="0.83360523" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32952693" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5037879" side_tool="true" weight="0.5015625" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49772727" weight="0.5578125" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.328125" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" weight="0.32954547" />
-      <window_info anchor="right" id="R Graphics" order="4" />
-      <window_info anchor="right" id="R Packages" order="5" weight="0.32954547" />
+      <window_info anchor="right" id="R Packages" order="4" weight="0.32954547" />
+      <window_info anchor="right" id="R Graphics" order="5" />
       <window_info anchor="right" id="Database" order="6" weight="0.32954547" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.php" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -480,90 +541,127 @@
     <MESSAGE value="add aplication circles" />
     <MESSAGE value="add photos and fonts" />
     <MESSAGE value="add bot directory" />
-    <option name="LAST_COMMIT_MESSAGE" value="add bot directory" />
+    <MESSAGE value="add website and menu circles" />
+    <MESSAGE value="add tasks_window and website with app" />
+    <option name="LAST_COMMIT_MESSAGE" value="add tasks_window and website with app" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>17</line>
+          <line>19</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>28</line>
+          <line>30</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>47</line>
+          <line>48</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>112</line>
+          <line>120</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>125</line>
+          <line>133</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>133</line>
+          <line>141</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>189</line>
+          <line>197</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>299</line>
+          <line>285</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>291</line>
+          <line>277</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>287</line>
+          <line>273</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>478</line>
+          <line>551</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>489</line>
+          <line>580</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>341</line>
+          <line>327</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>378</line>
+          <line>354</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>388</line>
+          <line>371</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/circles/init.py</url>
-          <line>460</line>
+          <line>533</line>
           <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/init.py</url>
+          <line>470</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/init.py</url>
+          <line>476</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/init.py</url>
+          <line>493</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/init.py</url>
+          <line>562</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/utils/utils.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/utils/utils.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/circles/utils/utils.py</url>
+          <line>17</line>
+          <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -659,31 +757,7 @@
     <entry file="file://$PROJECT_DIR$/heroku.yml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/bot/vk/vk.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="40" column="55" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/exatch-decembrist/vk/vk.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="45" column="50" selection-start-line="45" selection-start-column="50" selection-end-line="45" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/templates/circles/db.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-102" />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/templates/circles/db.py" />
     <entry file="file://$USER_HOME$/project/src/main/resources/static/css/style.css">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -694,46 +768,155 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/resources/templates/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="36" selection-start-column="36" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/templates/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="2" lean-forward="true" selection-start-column="2" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/resources/templates/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
-          <caret line="8" column="22" lean-forward="true" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/PycharmProjects/src/task.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="4" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/openpyxl/reader/excel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="313" lean-forward="true" selection-start-line="313" selection-end-line="313" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/project/src/main/resources/application.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="5" selection-start-line="5" selection-start-column="5" selection-end-line="5" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/project/src/main/java/com/example/domain/OGEDirection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/project/src/main/java/com/example/domain/EssayDirection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/project/src/main/java/com/example/domain/EGEDirection.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="46" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/project/src/main/java/com/example/controller/table.py" />
+    <entry file="file://$USER_HOME$/library_project/src/main/example/excel/table.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1185">
+          <caret line="79" selection-start-line="79" selection-end-line="79" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/resources/templates/static/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="36" column="14" lean-forward="true" selection-start-line="36" selection-start-column="14" selection-end-line="36" selection-end-column="14" />
+        <state relative-caret-position="585">
+          <caret line="39" column="19" selection-start-line="39" selection-start-column="19" selection-end-line="39" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/circles/db.py">
+    <entry file="file://$PROJECT_DIR$/bot/vk/vk.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
+        <state relative-caret-position="120">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
-            <marker date="1551375581238" expanded="true" signature="136:137" ph="..." />
-            <marker date="1551375581238" expanded="true" signature="565:712" ph="..." />
-            <marker date="1551375581238" expanded="true" signature="889:1148" ph="..." />
-            <marker date="1551375581238" expanded="true" signature="1180:1185" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/exatch-decembrist/vk/vk.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3027">
+          <caret line="21" column="56" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/circles/db/db.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1552627351610" expanded="true" signature="171:172" ph="..." />
+            <marker date="1552627351610" expanded="true" signature="692:839" ph="..." />
+            <marker date="1552627351610" expanded="true" signature="1016:1275" ph="..." />
+            <marker date="1552627351610" expanded="true" signature="1307:1312" ph="..." />
+            <marker date="1552627351610" expanded="true" signature="1806:1807" ph="..." />
+            <marker date="1552627351610" expanded="true" signature="2449:2742" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/circles/init.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="604">
-          <caret line="458" column="11" selection-start-line="458" selection-start-column="11" selection-end-line="458" selection-end-column="11" />
+        <state relative-caret-position="-7883">
+          <caret line="7" column="33" lean-forward="true" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
           <folding>
-            <marker date="1551112983314" expanded="true" signature="11954:18905" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="15025:18496" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="17836:17841" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="17879:17898" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="18537:18546" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="19037:19038" ph="..." />
-            <marker date="1551112983314" expanded="true" signature="19039:19040" ph="..." />
+            <element signature="e#0#10#0" expanded="true" />
+            <marker date="1552763166190" expanded="true" signature="3981:3986" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="10907:22478" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="13362:21205" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="18049:18050" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="18049:18068" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="18098:18272" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="18312:20607" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="18939:20607" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="21246:21255" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="21640:22478" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="22610:22612" ph="..." />
+            <marker date="1552763166190" expanded="true" signature="22612:22613" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/circles/utils/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="498">
+          <caret line="118" lean-forward="true" selection-start-line="118" selection-end-line="118" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1552763166250" expanded="true" signature="386:391" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="422:431" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="422:677" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="696:1565" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="1584:1593" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="1584:3034" ph="..." />
+            <marker date="1552763166250" expanded="true" signature="3055:3064" ph="..." />
           </folding>
         </state>
       </provider>
