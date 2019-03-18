@@ -472,7 +472,7 @@ class Main(QWidget):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
         self.close()
-        self.topics_window(class_of_tasks=sender)
+        self.topics_window(class_of_tasks=sender.text())
 
     def topics_window(self, class_of_tasks):
         super().__init__()
@@ -497,7 +497,6 @@ class Main(QWidget):
         if class_of_tasks == '8-9 класс':
             tasks = get_main_tasks(class_to_find=9)
 
-            number_of_task = 1
             for dictionary in tasks: # GET for db list tasks
 
                 text_task = {
@@ -506,30 +505,92 @@ class Main(QWidget):
                     'В': dictionary['text task'][2],
                     'Г': dictionary['text task'][3],
                 }
-                logical_signs = {
-                    'А': {'|': 0, '&': 0},
-                    'Б': {'|': 0, '&': 0},
-                    'В': {'|': 0, '&': 0},
-                    'Г': {'|': 0, '&': 0},
-                }
 
-                for key in text_task.keys():
-                    for let in range(len(text_task[key])):
-                        if text_task[key][let + 1] == '(' or text_task[key][let - 1] == ')':
-                            if text_task[key][let] == '|':
-                                logical_signs[key]['|'] += 2
-                            elif text_task[key][let] == '&':
-                                logical_signs[key]['&'] += 2
-                        else:
-                            if text_task[key][let] == '|':
-                                logical_signs[key]['|'] += 1
-                            elif text_task[key][let] == '&':
-                                logical_signs[key]['&'] += 1
+        elif class_of_tasks == '10-11 класс':
+            self.new_task(number_of_task=1)
 
-                titel = QLabel(f'Task №{number_of_task}')
-                # TODO write tasks interface
-                # TODO add to db tasks in collection 'main tasks'
-                # TODO write a method in db to get a tasks ~~
+        # TODO write tasks interface
+        # TODO add to db tasks in collection 'main tasks'
+        # TODO write a method in db to get a tasks ~~
+
+    def new_task(self, number_of_task):
+        tasks = Tests10Class(number_of_task=number_of_task)
+        if tasks.return_task['success']:
+            info = tasks.return_task['payload']
+            grid = QGridLayout(self)
+
+            titel = QLabel(f'Задача №{str(number_of_task)}')
+            fontTitel = QFont("Montserrat Medium", 20)
+            fontTitel.setBold(True)
+            titel.setFont(fontTitel)
+            titel.setAlignment(Qt.AlignCenter)
+
+            text_task = QGridLayout()
+            titel_find = QLabel('Найдено страниц')
+            titel_request = QLabel('Запрос')
+            for item in [titel_request, titel_find]:
+                item.setFont(QFont('Montserrat Medium', 14))
+                item.setFrameStyle(QFrame.Box)
+            text_task.addWidget(titel_request, 0, 0)
+            text_task.addWidget(titel_find, 0, 1)
+            row = 1
+            for request, find in zip(info['request'], info['find']):
+                position = 0
+                for item in [QLabel(request), QLabel(str(find))]:
+                    item.setFont(QFont('Montserrat Medium', 14))
+                    item.setFrameStyle(QFrame.Box)
+                    text_task.addWidget(item, row, position)
+
+                    position += 1
+                row += 1
+
+            question = QLabel(f"Найти: {info['question']}")
+            question.setFont(QFont('Montserrat Medium', 14))
+            question.setAlignment(Qt.AlignCenter)
+            text_task.addWidget(question, row, 0)
+            photo = QLabel()
+            namePhoto = 'photo/TestCircles.jpg'
+            pixmap = QPixmap(namePhoto)
+            pixmap2 = pixmap.scaled(300, 300, Qt.KeepAspectRatio)
+            photo.setPixmap(pixmap2)
+            logging.info(f"Add photo '{namePhoto}' in task window")
+
+            self.answer_edit = QLineEdit()
+            self.answer_edit.setPlaceholderText('Введите ваш ответ сюда')
+
+            buttos = QHBoxLayout()
+            buttos.setSpacing(10)
+            buttos.addStretch(1)
+            continue_button = QPushButton('Продолжить')
+            continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
+            continue_button.clicked.connect(self.exit_button_click)
+            exit_button = QPushButton('Завершить')
+            exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
+            exit_button.clicked.connect(self.exit_button_click)
+            buttos.addWidget(exit_button)
+            buttos.addWidget(continue_button)
+
+            grid.addWidget(titel, 0, 0)
+            grid.addLayout(text_task, 1, 0)
+            grid.addWidget(photo, 1, 1)
+            grid.addWidget(self.answer_edit, 2, 0)
+            grid.addLayout(buttos, 2, 1)
+
+            self.setLayout(grid)
+
+    def exit_button_click(self):
+        logging.info('Exit button click')
+        reply = QMessageBox.question(self, 'Message',
+                                     "Вы уверены, что хотите завершить тестирование?", QMessageBox.Yes |
+                                     QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            logging.info('User answer - YES')
+            logging.info('Return to menu')
+            self.close()
+            self.menu()
+        else:
+            logging.info('User answer - NO')
 
     def closeEvent(self, event):
         sender = self.sender()
@@ -562,7 +623,7 @@ class Main(QWidget):
 
     def on_exception(self, e):
         self.delete_items_of_layout(self.layout())
-        if check_internet_connection():
+        if check_network_connection():
             error_message = QLabel('Извините, возникла какая-то ошибка\n'
                                    'Нажмите назад, чтобы вернуться назад', self)
         else:
