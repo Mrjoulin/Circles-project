@@ -88,3 +88,11 @@ def get_main_tasks(class_to_find):
             list_of_task.append(task)
 
     return list_of_task
+
+
+def remove_all_users():
+    user = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='user')
+
+    logging.info('remove all users')
+
+    user.delete_many({})

@@ -3,7 +3,7 @@ import sip
 import logging
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QEvent
 
 from circles.db.db import *
 from circles.utils.utils import *
@@ -42,6 +42,7 @@ class Main(QWidget):
         # TODO Redesign the app
         # TODO Create a design for other windows
 
+        self.adjustSize()
         self.setGeometry(self.frameGeometry())
         self.move(150, 150)
         self.setWindowTitle('Euler circles')
@@ -116,6 +117,11 @@ class Main(QWidget):
         grid.addWidget(photo, 0, 0)
         grid.addItem(info, 0, 1)
 
+        if self.layout() is not None:
+            self.delete_items_of_layout(self.layout())
+            sip.delete(self.layout())
+
+        logging.info('Set layout in welcome window')
         self.setLayout(grid)
 
     @pyqtSlot()
@@ -123,26 +129,24 @@ class Main(QWidget):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
         if sender.text() == 'Войти':
-            self.close()
             self.login()
         elif sender.text() == 'Зарегистрироваться':
-            self.close()
             self.sign_up()
         else:
-            self.close()
             self.menu()
 
     def sign_up(self):
-        super().__init__()
+        self.delete_items_of_layout(self.layout())
+        sip.delete(self.layout())
 
         logging.info('Sign up window started')
         self.init_sign()
+        self.adjustSize()
+        self.setGeometry(450, 300, 500, 300)
         self.setWindowTitle('Sign in')
         self.show()
 
     def init_sign(self):
-        self.setGeometry(450, 300, 500, 300)
-
         titel = QLabel('Пожалуйста, введите свои данные:')
         name = QLabel('Имя')
         surname = QLabel('Фамилия')
@@ -193,6 +197,7 @@ class Main(QWidget):
                 hbox.addWidget(value)
             layout.addLayout(hbox)
 
+        logging.info('Set layout in sign up')
         self.setLayout(layout)
 
     @pyqtSlot()
@@ -200,8 +205,7 @@ class Main(QWidget):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
         if sender.text() == 'Отмена':
-            self.close()
-            self.__init__()
+            self.initUI()
         else:
             logging.info('Data checking')
             alph = 'абвгдеёжзийклмнопрстуфхцчшщыьъэюя'
@@ -273,19 +277,20 @@ class Main(QWidget):
 
     @pyqtSlot()
     def error_button(self):
-        self.close()
         self.__init__()
 
     def login(self):
-        super().__init__()
+        self.delete_items_of_layout(self.layout())
+        sip.delete(self.layout())
 
         logging.info('Login window started')
         self.init_login()
+        self.adjustSize()
+        self.setGeometry(450, 300, 500, 300)
         self.setWindowTitle('Login')
         self.show()
 
     def init_login(self):
-        self.setGeometry(450, 300, 500, 300)
         titel = QLabel('Введите свой email и пароль,\n чтобы войти в аккаунт')
         email = QLabel('Email')
         password = QLabel('Пароль')
@@ -323,6 +328,7 @@ class Main(QWidget):
                 hbox.addWidget(value)
             layout.addLayout(hbox)
 
+        logging.info('Set layout in login')
         self.setLayout(layout)
 
     @pyqtSlot()
@@ -330,8 +336,7 @@ class Main(QWidget):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
         if sender.text() == 'Отмена':
-            self.close()
-            self.__init__()
+            self.initUI()
         else:
             if self.emailLoginEdit.text() == '' or self.passwordLoginEdit.text() == '':
                 self.on_error('Все поля, должны быть заполнены!')
@@ -344,7 +349,6 @@ class Main(QWidget):
                 if status is not None:
                     user_information['success'] = True
                     user_information['payload'] = status
-                    self.close()
                     self.menu()
                 else:
                     self.on_error('Неверный логин и/или пароль!')
@@ -354,7 +358,8 @@ class Main(QWidget):
                 self.on_exception(e)
 
     def menu(self):
-        super().__init__()
+        self.delete_items_of_layout(self.layout())
+        sip.delete(self.layout())
 
         logging.info('Menu window started')
         self.init_menu()
@@ -366,12 +371,12 @@ class Main(QWidget):
         logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
 
         self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
-
+        self.adjustSize()
+        self.setGeometry(300, 200, 600, 300)
         self.setWindowTitle('Menu')
         self.show()
 
     def init_menu(self):
-        self.setGeometry(300, 200, 600, 300)
         user_status_seperator = QLabel(' | ')
         if user_information['success']:
             info = user_information['payload']
@@ -386,13 +391,12 @@ class Main(QWidget):
             user_status = [user_status_sign, user_status_name, user_status_seperator, user_status_email]
 
         else:
-            # TODO debug a user_status_sign and user_status_login
             user_status_sign = QLabel('Зарегистрироваться')
             user_status_login = QLabel('Войти')
             user_status_sign.setStyleSheet("text-decoration: underline; color: blue;")
             user_status_login.setStyleSheet("text-decoration: underline; color: blue;")
-            user_status_sign.mousePressEvent = self.welcome_button_click
-            user_status_login.mousePressEvent = self.welcome_button_click
+            user_status_sign.mousePressEvent = self.mouse_press_event_sign_up
+            user_status_login.mousePressEvent = self.mouse_press_event_login
             user_status = [user_status_sign, user_status_seperator, user_status_login]
 
         user_profile = QHBoxLayout()
@@ -456,16 +460,22 @@ class Main(QWidget):
                 vbox = QVBoxLayout()
                 vbox.setSpacing(20)
                 for val in item:
-                    try:
+                    if val.isWidgetType():
                         vbox.addWidget(val)
-                    except Exception as e:
-                        logging.error(e)
+                    else:
                         vbox.addLayout(val)
                 hbox.addLayout(vbox)
 
             layout.addLayout(hbox)
 
+        logging.info('Sey layout in menu')
         self.setLayout(layout)
+
+    def mouse_press_event_sign_up(self, event):
+        self.sign_up()
+
+    def mouse_press_event_login(self, event):
+        self.login()
 
     def create_teacher_option(self):
         pass
@@ -473,11 +483,11 @@ class Main(QWidget):
     def topics_button_click(self):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
-        self.close()
         self.topics_window(class_of_tasks=sender.text())
 
     def topics_window(self, class_of_tasks):
-        super().__init__()
+        self.delete_items_of_layout(self.layout())
+        sip.delete(self.layout())
 
         logging.info('Topics window started')
         self.init_topics(class_of_tasks=class_of_tasks)
@@ -489,13 +499,12 @@ class Main(QWidget):
         logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
 
         self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
-
+        self.adjustSize()
+        self.setGeometry(300, 200, 600, 300)
         self.setWindowTitle('Tests')
         self.show()
 
     def init_topics(self, class_of_tasks):
-        self.setGeometry(300, 200, 600, 300)
-
         if class_of_tasks == '8-9 класс':
             tasks = get_main_tasks(class_to_find=9)
 
@@ -510,10 +519,11 @@ class Main(QWidget):
 
         elif class_of_tasks == '10-11 класс':
             self.number_of_task = 1
+            self.right_tasks = 0
             self.new_task()
 
     def new_task(self):
-        tasks = Tests10Class(number_of_task=self.number_of_task)
+        tasks = Tests10Class(number_of_task=self.number_of_task % 9)
         if tasks.return_task['success']:
             self.info = tasks.return_task['payload']
             logging.info('Task Info: ' +
@@ -528,6 +538,11 @@ class Main(QWidget):
             fontTitel.setBold(True)
             titel.setFont(fontTitel)
             titel.setAlignment(Qt.AlignCenter)
+
+            if self.layout() is not None:
+                procent_of_rigth = QLabel(f'Верно решёных - {str(self.right_tasks*100 // (self.number_of_task - 1))} %')
+                procent_of_rigth.setFont(QFont("Montserrat Medium", 14))
+
 
             text_task = QGridLayout()
             titel_find = QLabel('Найдено страниц')
@@ -576,18 +591,21 @@ class Main(QWidget):
             buttos.addWidget(continue_button)
 
             grid.addWidget(titel, 0, 0)
+
             grid.addLayout(text_task, 1, 0)
             grid.addWidget(photo, 1, 1)
             grid.addWidget(self.answer_edit, 2, 0)
             grid.addLayout(buttos, 2, 1)
 
             if self.layout() is not None:
+                grid.addWidget(procent_of_rigth, 0, 1)
                 self.delete_items_of_layout(self.layout())
                 sip.delete(self.layout())
+
+            logging.info('Set layout in task')
             self.setLayout(grid)
 
     def answer_task(self):
-        # TODO in right top corner print a 'right answers'/'wrong answers'
         if self.answer_edit.text() == '':
             self.on_error('Введите ответ на задачу!')
             return
@@ -596,11 +614,14 @@ class Main(QWidget):
 
         try:
             if int(self.answer_edit.text()) == self.info['answer']:
+                logging.info('Right answer')
                 titel = QLabel('Верный ответ!')
                 titel.setStyleSheet("color: green")
+                self.right_tasks += 1
             else:
+                logging.info('Wrong answer')
                 titel = QLabel('Неправильный ответ!')
-                titel.setStyleSheet("color: rgb(255, 0, 0)")
+                titel.setStyleSheet("color: red")
             fontTitel = QFont("Montserrat Medium", 20)
             fontTitel.setBold(True)
             titel.setFont(fontTitel)
@@ -609,10 +630,25 @@ class Main(QWidget):
             self.on_error('В ответе должно содержаться одно число -\nколичество страниц найденых по запросу')
             return
 
+        decision_status = QVBoxLayout()
+        decision_status.setSpacing(1)
+        decision_status.addStretch(1)
+        procent_of_right = self.right_tasks*100 // self.number_of_task
+        procent = QLabel(f'Верно решёных - {str(procent_of_right)} %')
+        procent.setFont(QFont("Montserrat Medium", 14))
+        result = QLabel('Оптимальный результат - более 90 %')
+        result.setFont(QFont("Montserrat Medium", 14))
+        if procent_of_right >= 90:
+            result.setStyleSheet("color: green")
+        else:
+            result.setStyleSheet("color: red")
+        decision_status.addWidget(procent)
+        decision_status.addWidget(result)
+
         explanation = ''
         number_of_letter = 0
         text_explanation = self.info['explanation']
-        while number_of_letter + 40 <= len(text_explanation):
+        while number_of_letter + 40 <= len(text_explanation) - 1:
             row_long = 40
             while text_explanation[number_of_letter + row_long] != ' ':
                 row_long -= 1
@@ -654,6 +690,7 @@ class Main(QWidget):
         buttons.addWidget(continue_button)
 
         grid.addWidget(titel, 0, 0)
+        grid.addLayout(decision_status, 0, 1)
         grid.addWidget(exp, 1, 0)
         grid.addWidget(photo, 1, 1)
         grid.addWidget(question_of_task, 2, 0)
@@ -661,6 +698,8 @@ class Main(QWidget):
 
         self.delete_items_of_layout(self.layout())
         sip.delete(self.layout())
+
+        logging.info('Set layout in answer')
         self.setLayout(grid)
 
         self.number_of_task += 1
@@ -674,16 +713,11 @@ class Main(QWidget):
         if reply == QMessageBox.Yes:
             logging.info('User answer - YES')
             logging.info('Return to menu')
-            self.close()
             self.menu()
         else:
             logging.info('User answer - NO')
 
-    def closeEvent(self, event):
-        sender = self.sender()
-        if sender is not None:
-            return
-
+    def closeEvent(self, event, *args):
         logging.info('Close event')
         reply = QMessageBox.question(self, 'Message',
                                      "Вы уверены, что хотите выйти?", QMessageBox.Yes |
@@ -699,7 +733,6 @@ class Main(QWidget):
 
     def delete_items_of_layout(self, layout):
         if layout is not None:
-            logging.info('Remove items in layout')
             while layout.count():
                 item = layout.takeAt(0)
                 widget = item.widget()
