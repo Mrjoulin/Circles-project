@@ -1,7 +1,8 @@
 import logging
 import requests
 import random
-from circles.init import Main
+from PyQt5.QtWidgets import *
+from circles.init import *
 
 
 def check_network_connection():
@@ -14,35 +15,99 @@ def check_network_connection():
     return connection
 
 
-class Tests10Class(Main):
-    def __init__(self, number_of_task):
-        super().__init__()
-        names = [
-            ['Австралия', 'Утконос', 'Коала'],
-            ['Смартфон', 'Платформа', 'Дисплей'],
-            ['Гаджеты', 'Часы', 'Док-станция'],
-            ['Валюта', 'Кредит', 'Рынок'],
-            ['Модель', 'Технология', 'Патент'],
-            ['Грибы', 'Рыжики', 'Фото'],
-            ['Человек', 'Первобытный', 'Археология'],
-            ['Суфле', 'Корзина', 'Эклер'],
-            ['Стольник', 'Рында', 'Парус'],
-            ['Кот', 'Дикий', 'Гепард'],
-            ['Сканер', 'Принтер', 'Модем'],
-            ['Автомобиль', 'Мотоцикл', 'Велосипед']
-        ]
+names = [
+    ['Австралия', 'Утконос', 'Коала', 'Животное'],
+    ['Смартфон', 'Платформа', 'Дисплей', 'Память'],
+    ['Гаджеты', 'Часы', 'Док-станция', 'Наушники'],
+    ['Валюта', 'Кредит', 'Рынок', 'Акции'],
+    ['Модель', 'Технология', 'Патент', 'Разработчик'],
+    ['Грибы', 'Рыжики', 'Фото', 'Опята'],
+    ['Человек', 'Первобытный', 'Археология', 'Кости'],
+    ['Суфле', 'Корзина', 'Эклер', 'Пирожное'],
+    ['Стольник', 'Рында', 'Парус', 'Корабль'],
+    ['Кот', 'Дом', 'Гепард', 'Вода'],
+    ['Сканер', 'Принтер', 'Модем', 'Роутер'],
+    ['Автомобиль', 'Мотоцикл', 'Велосипед', 'Ролики'],
+    ['Клуб', 'Эмблема', 'Футбол', 'Сборная'],
+    ['Страна', 'Герб', 'Флаг', 'Гимн'],
+    ['Рецепт', 'Салат', 'Курица', 'Овощи'],
+    ['Работа', 'Физика', 'Формула', 'Электричество'],
+    ['История', 'Россия', 'Реформы', 'Империя'],
+    ['Кристалл', 'Форма', 'Решетка', 'Структура'],
+    ['Загрязнения', 'Экология', 'Реки', 'Проблемы'],
+    ['Техника', 'Журнал', 'Каталог', 'Компьютеры'],
+    ['Погода', 'Осадки', 'Прогноз', 'Солнце'],
+    ['Портрет', 'Повесть', 'Гоголь', 'Рассказ'],
+    ['Орёл', 'Созвездие', 'Легенда', 'Зевс'],
+    ['Лего', 'Игра', 'История', 'Дети'],
+    ['Мечта', 'Выбор', 'Желание', 'Действие'],
+    ['Крот', 'Осязание', 'Еда', 'Земля'],
+    ['Рысь', 'Добыча', 'Ареал', 'Лев']
+]
+
+
+class Tests9Class(Main):
+    def __init__(self, number_of_task, already_been):
+        QWidget.__init__(self)
+        self.questions = ['', 'возрастания', 'убывания']
+
+        random_name = names[random.randint(0, len(names) - 1)]
+        while random_name in already_been:
+            random_name = names[random.randint(0, len(names) - 1)]
         tests = [
-            self.task_one(*names[random.randint(0, len(names) - 1)]),
-            self.task_two(*names[random.randint(0, len(names) - 1)]),
-            self.task_three(*names[random.randint(0, len(names) - 1)]),
-            self.task_four(*names[random.randint(0, len(names) - 1)]),
-            self.task_five(*names[random.randint(0, len(names) - 1)]),
-            self.task_six(*names[random.randint(0, len(names) - 1)]),
-            self.task_seven(*names[random.randint(0, len(names) - 1)]),
-            self.task_eight(*names[random.randint(0, len(names) - 1)]),
-            self.task_nine(*names[random.randint(0, len(names) - 1)]),
+            self.task_one(random_name)
+
         ]
         try:
+            logging.info(f'Search by parameters:{random_name[0]}, {random_name[1]}, {random_name[2]}, {random_name[3]}')
+            self.return_task = {'success': True, 'payload': tests[number_of_task - 1]}
+            # return statements:
+            # 'options': names in task
+            # 'request': {requests}
+            # 'question': question to find
+            # 'answer': answer to question
+            # 'explanation': explanation of task
+            # TODO create txt file to write a names and with connection of network - get updates
+        except Exception as e:
+            logging.error('Error: ' + str(e))
+            self.return_task = {'success': False, 'payload': {}}
+
+    def task_one(self, parms):
+        index = random.choice([-1, 1])
+
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'A': f'{parms[0]}|{parms[1]};124567',
+                'Б': f'{parms[2]}&{parms[1]};67',
+                'В': f'{parms[0]};1456',
+                'Г': f'{parms[2]}|{parms[1]}|{parms[0]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'БВАГ'[::index]
+        }
+
+
+class Tests10Class(Main):
+    def __init__(self, number_of_task, already_been):
+        QWidget.__init__(self)
+
+        random_name = names[random.randint(0, len(names) - 1)]
+        while random_name in already_been:
+            random_name = names[random.randint(0, len(names) - 1)]
+        tests = [
+            self.task_one(random_name),
+            self.task_two(random_name),
+            self.task_three(random_name),
+            self.task_four(random_name),
+            self.task_five(random_name),
+            self.task_six(random_name),
+            self.task_seven(random_name),
+            self.task_eight(random_name),
+            self.task_nine(random_name),
+        ]
+        try:
+            logging.info(f'Search by parameters: {random_name[0]}, {random_name[1]}, {random_name[2]}')
             self.return_task = {'success': True, 'payload': tests[number_of_task - 1]}
             # return statements:
             # 'request': requests of task
@@ -51,13 +116,15 @@ class Tests10Class(Main):
             # 'answer': answer to question
             # 'explanation': explanation of task
             # TODO create txt file to write a names and with connection of network - get updates
-            # TODO write the names in the array and pass them in the parameters to the unique task
         except Exception as e:
             logging.error('Error: ' + str(e))
             self.return_task = {'success': False, 'payload': {}}
 
-    def task_one(self, parm_one, parm_two, parm_three):
-        logging.info('Search by parameters: ' + parm_one + parm_two + parm_three)
+    def task_one(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one|parm_two|parm_three
         find_one = random.randint(700, 1100)
         # parm_three&(parm_one|parm_two)
@@ -80,12 +147,16 @@ class Tests10Class(Main):
                 f'{parm_two}|{parm_one}'
             ],
             'find': [find_one, find_two, find_three],
-            'question': parm_three,
+            'question': f'{parm_three};3567',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_two(self, parm_one, parm_two, parm_three):
+    def task_two(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(200, 800)
         # parm_two
@@ -125,12 +196,16 @@ class Tests10Class(Main):
                 f'{parm_three}&{parm_two}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_one}|{parm_two}|{parm_three}',
+            'question': f'{parm_one}|{parm_two}|{parm_three};1234567',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_three(self, parm_one, parm_two, parm_three):
+    def task_three(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(200, 500)
         # parm_two
@@ -150,15 +225,17 @@ class Tests10Class(Main):
             find_four = find_one + find_three
             text_find = f'{parm_one}|{parm_three}'
             text_question = f'({text_find})&{parm_two}'
+            number_question = '467'
         elif sum_find == find_five:
             find_five = find_one + find_two
             text_find = f'{parm_one}|{parm_two}'
             text_question = f'({text_find})&{parm_three}'
+            number_question = '567'
         else:
             find_six = find_two + find_three
             text_find = f'{parm_three}|{parm_two}'
             text_question = f'({text_find})&{parm_one}'
-
+            number_question = '456'
         answer = 2*(find_one + find_two + find_three) - find_four - find_five - find_six
 
         explanation = f'Зная {text_find} и численное значение каждой оркужности, можно найти их пересечение и ' \
@@ -176,12 +253,16 @@ class Tests10Class(Main):
                 f'{parm_three}|{parm_two}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': text_question,
+            'question': f'{text_question};{number_question}',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_four(self, parm_one, parm_two, parm_three):
+    def task_four(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(200, 500)
         # parm_two
@@ -213,12 +294,16 @@ class Tests10Class(Main):
                 f'{parm_one}|{parm_two}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_one}&({parm_three}|{parm_two})',
+            'question': f'{parm_one}&({parm_three}|{parm_two});456',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_five(self, parm_one, parm_two, parm_three):
+    def task_five(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(200, 500)
         # parm_two
@@ -250,12 +335,16 @@ class Tests10Class(Main):
                 f'{parm_three}&({parm_one}|{parm_two})'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_one}|{parm_two}',
+            'question': f'{parm_one}|{parm_two};124567',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_six(self, parm_one, parm_two, parm_three):
+    def task_six(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(200, 500)
         # parm_two
@@ -287,12 +376,16 @@ class Tests10Class(Main):
                 f'({parm_two}|{parm_three})&{parm_one}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'({parm_one}|{parm_three})&{parm_two}',
+            'question': f'({parm_one}|{parm_three})&{parm_two};467',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_seven(self, parm_one, parm_two, parm_three):
+    def task_seven(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(400, 800)
         # parm_two
@@ -308,6 +401,7 @@ class Tests10Class(Main):
             find_four = 0
             text_find = f'{parm_one}|{parm_three}'
             text_question = f'({parm_one}|{parm_three})&{parm_two}'
+            number_question = '467'
         else:
             find_four = find_one + find_three - random.randint(50, 300)
         # parm_one&parm_two
@@ -315,6 +409,7 @@ class Tests10Class(Main):
             find_five = 0
             text_find = f'{parm_one}&{parm_two}'
             text_question = f'({parm_one}|{parm_two})&{parm_three}'
+            number_question = '567'
         else:
             find_five = random.randint(100, 300)
         # parm_three&parm_two
@@ -322,6 +417,7 @@ class Tests10Class(Main):
             find_six = 0
             text_find = f'{parm_three}&{parm_two}'
             text_question = f'({parm_three}|{parm_two})&{parm_one}'
+            number_question = '456'
         else:
             find_six = random.randint(100, 300)
 
@@ -348,12 +444,16 @@ class Tests10Class(Main):
                 f'{parm_three}&{parm_two}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': text_question,
+            'question': f'{text_question};{number_question}',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_eight(self, parm_one, parm_two, parm_three):
+    def task_eight(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(400, 800)
         # parm_two
@@ -393,12 +493,16 @@ class Tests10Class(Main):
                 f'{parm_two} & {parm_three}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_one}|{parm_two}|{parm_three}',
+            'question': f'{parm_one}|{parm_two}|{parm_three};1234567',
             'answer': answer,
             'explanation': explanation
         }
 
-    def task_nine(self, parm_one, parm_two, parm_three):
+    def task_nine(self, parms):
+        parm_one = parms[0]
+        parm_two = parms[1]
+        parm_three = parms[2]
+
         # parm_one
         find_one = random.randint(400, 800)
         # parm_two
@@ -436,7 +540,7 @@ class Tests10Class(Main):
                 f'{parm_one}|{parm_two}|{parm_three}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_three}&{parm_two}',
+            'question': f'{parm_three}&{parm_two};67',
             'answer': answer,
             'explanation': explanation
         }

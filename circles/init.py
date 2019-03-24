@@ -1,12 +1,13 @@
 import sys
 import sip
+from PIL import Image, ImageDraw, ImageFont
 import logging
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt, pyqtSlot, QEvent
 
-from circles.db.db import *
 from circles.utils.utils import *
+from circles.db.db import *
 
 logging.basicConfig(
     format='[%(filename)s:%(lineno)s - %(funcName)20s()]%(levelname)s:%(name)s:%(message)s',
@@ -25,6 +26,8 @@ class Main(QWidget):
         self.backgroundRad = 255
         self.backgroundGreen = 255  # 181
         self.backgroundBlue = 255  # 100
+        # link clicked
+        self.link_clicked = False
         # Start
         logging.info('Start Welcome window')
         self.initUI()
@@ -269,7 +272,6 @@ class Main(QWidget):
                                                        email=self.emailRegistrationEdit.text(),
                                                        password=self.passwordRegistrationEdit.text())
                 user_information['success'] = True
-                self.close()
                 self.menu()
 
             except Exception as e:
@@ -483,14 +485,15 @@ class Main(QWidget):
     def topics_button_click(self):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
-        self.topics_window(class_of_tasks=sender.text())
+        self.class_of_tasks = sender.text()
+        self.topics_window()
 
-    def topics_window(self, class_of_tasks):
+    def topics_window(self):
         self.delete_items_of_layout(self.layout())
         sip.delete(self.layout())
 
         logging.info('Topics window started')
-        self.init_topics(class_of_tasks=class_of_tasks)
+        self.init_topics()
 
         self.setAutoFillBackground(True)
         p = self.palette()
@@ -504,108 +507,136 @@ class Main(QWidget):
         self.setWindowTitle('Tests')
         self.show()
 
-    def init_topics(self, class_of_tasks):
-        if class_of_tasks == '8-9 класс':
-            tasks = get_main_tasks(class_to_find=9)
-
-            for dictionary in tasks:
-                # GET for db list tasks
-                text_task = {
-                    'А': dictionary['text task'][0],
-                    'Б': dictionary['text task'][1],
-                    'В': dictionary['text task'][2],
-                    'Г': dictionary['text task'][3],
-                }
-
-        elif class_of_tasks == '10-11 класс':
-            self.number_of_task = 1
-            self.right_tasks = 0
-            self.new_task()
+    def init_topics(self):
+        self.number_of_task = 1
+        self.right_tasks = 0
+        self.already_been = []
+        self.new_task()
 
     def new_task(self):
-        tasks = Tests10Class(number_of_task=self.number_of_task % 9)
-        if tasks.return_task['success']:
-            self.info = tasks.return_task['payload']
-            logging.info('Task Info: ' +
-                         str(self.info['request']) + ' ' +
-                         str(self.info['find']) + ' ' +
-                         str(self.info['question']) + ' ' +
-                         str(self.info['answer']))
-            grid = QGridLayout()
+        self.user_can_ask_a_question = True
 
-            titel = QLabel(f'Задача №{str(self.number_of_task)}')
-            fontTitel = QFont("Montserrat Medium", 20)
-            fontTitel.setBold(True)
-            titel.setFont(fontTitel)
-            titel.setAlignment(Qt.AlignCenter)
+        grid = QGridLayout()
 
-            if self.layout() is not None:
-                procent_of_rigth = QLabel(f'Верно решёных - {str(self.right_tasks*100 // (self.number_of_task - 1))} %')
-                procent_of_rigth.setFont(QFont("Montserrat Medium", 14))
+        titel = QLabel(f'Задача №{str(self.number_of_task)}')
+        fontTitel = QFont("Montserrat Medium", 20)
+        fontTitel.setBold(True)
+        titel.setFont(fontTitel)
+        titel.setAlignment(Qt.AlignCenter)
 
+        if self.layout() is not None:
+            procent_of_rigth = QLabel(f'Верно решёных - {str(self.right_tasks*100 // (self.number_of_task - 1))} %')
+            procent_of_rigth.setFont(QFont("Montserrat Medium", 14))
 
-            text_task = QGridLayout()
-            titel_find = QLabel('Найдено страниц')
-            titel_request = QLabel('Запрос')
-            for item in [titel_request, titel_find]:
-                item.setFont(QFont('Montserrat Medium', 14))
-                item.setFrameStyle(QFrame.Box)
-            text_task.addWidget(titel_request, 0, 0)
-            text_task.addWidget(titel_find, 0, 1)
-            row = 1
-            for request, find in zip(self.info['request'], self.info['find']):
-                position = 0
-                for item in [QLabel(request), QLabel(str(find))]:
-                    item.setFont(QFont('Montserrat Medium', 14))
-                    item.setFrameStyle(QFrame.Box)
-                    text_task.addWidget(item, row, position)
+        if self.class_of_tasks == '8-9 класс':
+            task = Tests9Class(self.number_of_task, self.already_been)
+            if task.return_task['success']:
+                self.info = task.return_task['payload']
+                logging.info('Task Info: ' +
+                             str(self.info['options']) + ' ' +
+                             str(self.info['question']) + ' ' +
+                             str(self.info['answer']))
 
-                    position += 1
-                row += 1
+                text_task = self.get_text_task_8_9_class()
 
-            question = QLabel(f"Найти: {self.info['question']}")
-            question.setFont(QFont('Montserrat Medium', 14))
-            question.setAlignment(Qt.AlignCenter)
-            text_task.addWidget(question, row, 0)
+            self.answer_edit = QLineEdit()
+            self.answer_edit.setPlaceholderText('Введите сюда ваш ответ (только число)')
+        else:
+            task = Tests10Class(number_of_task=self.number_of_task % 9, already_been=self.already_been)
+            if task.return_task['success']:
+                self.info = task.return_task['payload']
+                logging.info('Task Info: ' +
+                             str(self.info['request']) + ' ' +
+                             str(self.info['find']) + ' ' +
+                             str(self.info['question']) + ' ' +
+                             str(self.info['answer']))
 
-            photo = QLabel()
-            namePhoto = 'photo/TestCircles.jpg'
-            pixmap = QPixmap(namePhoto)
-            pixmap2 = pixmap.scaled(300, 300, Qt.KeepAspectRatio)
-            photo.setPixmap(pixmap2)
-            logging.info(f"Add photo '{namePhoto}' in task window")
+                text_task = self.get_text_task_10_11_class()
 
             self.answer_edit = QLineEdit()
             self.answer_edit.setPlaceholderText('Введите сюда ваш ответ (только число)')
 
-            buttos = QHBoxLayout()
-            buttos.setSpacing(10)
-            buttos.addStretch(1)
-            continue_button = QPushButton('Далее')
-            continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
-            continue_button.clicked.connect(self.answer_task)
-            exit_button = QPushButton('Завершить')
-            exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
-            exit_button.clicked.connect(self.exit_button_click)
-            buttos.addWidget(exit_button)
-            buttos.addWidget(continue_button)
+        buttos = QHBoxLayout()
+        buttos.setSpacing(10)
+        buttos.addStretch(1)
+        continue_button = QPushButton('Далее')
+        continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
+        if self.class_of_tasks == '8-9 класс':
+            continue_button.clicked.connect(self.answer_task_10)
+        else:
+            continue_button.clicked.connect(self.answer_task_10)
+        exit_button = QPushButton('Завершить')
+        exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
+        exit_button.clicked.connect(self.exit_button_click)
+        buttos.addWidget(exit_button)
+        buttos.addWidget(continue_button)
 
-            grid.addWidget(titel, 0, 0)
+        grid.addWidget(titel, 0, 0)
 
-            grid.addLayout(text_task, 1, 0)
-            grid.addWidget(photo, 1, 1)
-            grid.addWidget(self.answer_edit, 2, 0)
-            grid.addLayout(buttos, 2, 1)
+        grid.addLayout(text_task, 1, 0)
+        grid.addWidget(self.overlay_photo('new', None), 1, 1)
+        grid.addWidget(self.answer_edit, 2, 0)
+        grid.addLayout(buttos, 2, 1)
 
-            if self.layout() is not None:
-                grid.addWidget(procent_of_rigth, 0, 1)
-                self.delete_items_of_layout(self.layout())
-                sip.delete(self.layout())
+        if self.layout() is not None:
+            grid.addWidget(procent_of_rigth, 0, 1)
+            self.delete_items_of_layout(self.layout())
+            sip.delete(self.layout())
 
-            logging.info('Set layout in task')
-            self.setLayout(grid)
+        logging.info('Set layout in task')
+        self.setLayout(grid)
 
-    def answer_task(self):
+    def get_text_task_8_9_class(self):
+        text_task = QVBoxLayout()
+        #text_task.addStretch(1)
+        titel_request = QLabel('Запросы к поисковому серверу')
+        titel_request.setFont(QFont('Montserrat Medium', 16))
+        titel_request.setAlignment(Qt.AlignCenter)
+        text_task.addWidget(titel_request)
+        for letter, request in self.info['request'].items():
+            request_text, request_number = request.split(';')
+            line = QLabel(letter + ': ' + request_text)
+            line.setFont(QFont('Montserrat Medium', 14))
+            line.setFrameStyle(QFrame.Box)
+            text_task.addWidget(line)
+
+        text_question = self.info['question']
+        question = QLabel(f"Напишите буквы в порядке {text_question}\nколичества страниц, найденых сервером.")
+        question.setFont(QFont('Montserrat Medium', 14))
+        question.setAlignment(Qt.AlignCenter)
+        text_task.addWidget(question)
+
+        return text_task
+
+    def get_text_task_10_11_class(self):
+        text_task = QGridLayout()
+        titel_find = QLabel('Найдено страниц')
+        titel_request = QLabel('Запрос')
+        for item in [titel_request, titel_find]:
+            item.setFont(QFont('Montserrat Medium', 14))
+            item.setFrameStyle(QFrame.Box)
+        text_task.addWidget(titel_request, 0, 0)
+        text_task.addWidget(titel_find, 0, 1)
+        row = 1
+        for request, find in zip(self.info['request'], self.info['find']):
+            position = 0
+            for item in [QLabel(request), QLabel(str(find))]:
+                item.setFont(QFont('Montserrat Medium', 14))
+                item.setFrameStyle(QFrame.Box)
+                text_task.addWidget(item, row, position)
+
+                position += 1
+            row += 1
+
+        text_question, self.number_question = (self.info['question'].split(';'))
+        question = QLabel(f"Найти: {text_question}")
+        question.setFont(QFont('Montserrat Medium', 14))
+        question.setAlignment(Qt.AlignCenter)
+        text_task.addWidget(question, row, 0)
+
+        return text_task
+
+    def answer_task_10(self):
         if self.answer_edit.text() == '':
             self.on_error('Введите ответ на задачу!')
             return
@@ -664,18 +695,10 @@ class Main(QWidget):
         exp = QLabel(explanation)
         exp.setFont(QFont("Montserrat Medium", 14))
 
-        photo = QLabel()
-        namePhoto = 'photo/TestCircles.jpg'
-        pixmap = QPixmap(namePhoto)
-        pixmap2 = pixmap.scaled(300, 300, Qt.KeepAspectRatio)
-        photo.setPixmap(pixmap2)
-        logging.info(f"Add photo '{namePhoto}' in answer window")
-
-        # TODO write a question for ask window
         question_of_task = QLabel('Возник вопрос по заданию? Задайте его нам')
         question_of_task.setFont(QFont("Montserrat Medium", 12))
         question_of_task.setStyleSheet("text-decoration: underline; color: blue;")
-        question_of_task.mousePressEvent = self.closeEvent
+        question_of_task.mousePressEvent = self.question_button_click
 
         buttons = QHBoxLayout()
         buttons.setSpacing(10)
@@ -692,12 +715,13 @@ class Main(QWidget):
         grid.addWidget(titel, 0, 0)
         grid.addLayout(decision_status, 0, 1)
         grid.addWidget(exp, 1, 0)
-        grid.addWidget(photo, 1, 1)
+        grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
         grid.addWidget(question_of_task, 2, 0)
         grid.addLayout(buttons, 2, 1)
 
-        self.delete_items_of_layout(self.layout())
-        sip.delete(self.layout())
+        if self.layout() is not None:
+            self.delete_items_of_layout(self.layout())
+            sip.delete(self.layout())
 
         logging.info('Set layout in answer')
         self.setLayout(grid)
@@ -717,7 +741,143 @@ class Main(QWidget):
         else:
             logging.info('User answer - NO')
 
-    def closeEvent(self, event, *args):
+    def question_button_click(self, event):
+        if self.user_can_ask_a_question:
+            self.link_clicked = True
+            self.close()
+
+            super().__init__()
+
+            self.setAutoFillBackground(True)
+            p = self.palette()
+            p.setColor(self.backgroundRole(), QColor(self.backgroundRad, self.backgroundGreen, self.backgroundBlue))
+            self.setPalette(p)
+            logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
+
+            titel = QLabel('Введите ваш вопрос по задаче в это поле')
+            fontTitel = QFont("Montserrat Medium", 20)
+            fontTitel.setBold(True)
+            titel.setFont(fontTitel)
+            titel.setAlignment(Qt.AlignCenter)
+
+            self.question_edit = QTextEdit()
+            self.question_edit.setPlaceholderText('Введите сюда ваш вопрос')
+
+            buttons = QHBoxLayout()
+            buttons.addStretch(5)
+            buttons.addSpacing(10)
+            cancel_button = QPushButton('Отмена')
+            continue_button = QPushButton('Продолжить')
+            cancel_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            continue_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            cancel_button.clicked.connect(self.continue_question_button_click)
+            continue_button.clicked.connect(self.continue_question_button_click)
+            buttons.addWidget(cancel_button)
+            buttons.addWidget(continue_button)
+
+            content = QVBoxLayout(self)
+            content.addSpacing(10)
+            content.addWidget(titel)
+            content.addWidget(self.question_edit)
+            content.addLayout(buttons)
+
+            self.setLayout(content)
+
+            self.adjustSize()
+            self.setGeometry(self.frameGeometry())
+            self.move(150, 150)
+            self.setWindowTitle('Ask a question')
+            self.show()
+        else:
+            self.on_error('Вы не можете задавать более\n1 вопроса по задаче')
+
+    def continue_question_button_click(self):
+        sender = self.sender()
+        if sender.text() == 'Отмена':
+            self.answer_task()
+            return
+
+        if self.question_edit.toPlainText() != '':
+            try:
+                add_user_question_for_task(user_information['payload']['email'],
+                                           self.question_edit.toPlainText(),
+                                           self.class_of_tasks,
+                                           self.number_of_task)
+            except KeyError:
+                self.on_error('Вопрос могут задавать только\n зарегестрированные пользователи')
+                return
+        else:
+            self.on_error('Пожалуйста, введите вопрос')
+            return
+
+        self.user_can_ask_a_question = False
+        titel = QLabel("Спсибо за ваш вопрос!\nВ скором времени мы вам ответим.", self)
+        fontTitel = QFont("Montserrat Medium", 20)
+        fontTitel.setBold(True)
+        titel.setFont(fontTitel)
+        titel.setAlignment(Qt.AlignCenter)
+
+        btn = QPushButton('Вернуться')
+        btn.setStyleSheet("background-color: rgb(223, 209, 21)")
+        btn.clicked.connect(self.answer_task)
+
+        self.delete_items_of_layout(self.layout())
+        sip.delete(self.layout())
+        box = QVBoxLayout()
+        box.addWidget(titel)
+        box.addWidget(btn)
+
+        self.setLayout(box)
+
+    def overlay_photo(self, status_task, overlay):
+
+        if self.number_of_task % 9 != 1 or self.class_of_tasks != '10-11 класс':
+            if self.class_of_tasks == '10-11 класс':
+                names = [self.info['request'][i] for i in range(3)]
+            else:
+                names = self.info['options']
+        else:
+            names = self.info['request'][0].split('|')
+
+        if status_task == 'new':
+            img = Image.open('photo/taskCircles/all.png')
+            if len(self.already_been) < 12:
+                self.already_been += [names]
+            else:
+                self.already_been = []
+        else:
+            if overlay == 'all':
+                img = Image.open('photo/taskCircles/all.png')
+            else:
+                img = Image.open('photo/taskCircles/all_grey.png').convert("RGBA")
+                for number_photo in overlay:
+                    sector = Image.open(f'photo/taskCircles/{number_photo}.png').convert("RGBA")
+                    img.paste(sector, None, sector)
+
+        draw = ImageDraw.Draw(img)
+        draw.text((65, 120), names[0], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+        draw.text((250, 120), names[1], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+        draw.text((150, 270), names[2], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+
+        namePhoto = 'photo/taskCircles/newTask.png'
+        img.save(namePhoto)
+
+        photo = QLabel()
+        pixmap = QPixmap(namePhoto)
+        pixmap2 = pixmap.scaled(390, 390, Qt.KeepAspectRatio)
+        photo.setPixmap(pixmap2)
+        logging.info(f"Add photo '{namePhoto}' in answer window")
+
+        return photo
+
+    def closeEvent(self, event):
+        sender = self.sender()
+
+        if sender is not None or self.link_clicked:
+            self.link_clicked = False
+            event.accept()
+            return
+
         logging.info('Close event')
         reply = QMessageBox.question(self, 'Message',
                                      "Вы уверены, что хотите выйти?", QMessageBox.Yes |

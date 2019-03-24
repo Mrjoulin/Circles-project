@@ -90,9 +90,29 @@ def get_main_tasks(class_to_find):
     return list_of_task
 
 
-def remove_all_users():
-    user = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='user')
+def add_user_question_for_task(user_email, user_question, class_of_task,  number_of_task):
+    question = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='question_about_task')
+    logging.info('Add question to collection question_about_task')
 
-    logging.info('remove all users')
+    post = {
+        'user_email': user_email,
+        'user_question': user_question,
+        'class_of_task': class_of_task,
+        'number_of_task': number_of_task
+    }
 
-    user.delete_many({})
+    logging.info('Insert post: ' + str(post))
+    ins = question.insert_one(post)
+    logging.info(f'Insert ID: {str(ins)}')
+
+
+def get_and_remove_all_data_in_collection(collection):
+    data = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection=collection)
+
+    logging.info(f'Get all docs in {collection} collection')
+    docs = data.find()
+
+    logging.info(f'Remove all docs in {collection} collection')
+    data.delete_many({})
+
+    return docs
