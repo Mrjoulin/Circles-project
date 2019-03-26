@@ -55,8 +55,21 @@ class Tests9Class(Main):
         while random_name in already_been:
             random_name = names[random.randint(0, len(names) - 1)]
         tests = [
-            self.task_one(random_name)
-
+            self.task_one(random_name),
+            self.task_two(random_name),
+            self.task_three(random_name),
+            self.task_four(random_name),
+            self.task_five(random_name),
+            self.task_six(random_name),
+            self.task_seven(random_name),
+            self.task_eight(random_name),
+            self.task_nine(random_name),
+            self.task_ten(random_name),
+            self.task_eleven(random_name),
+            self.task_twelve(random_name),
+            self.task_thirteen(random_name),
+            self.task_fourteen(random_name),
+            self.task_fifteen(random_name)
         ]
         try:
             logging.info(f'Search by parameters:{random_name[0]}, {random_name[1]}, {random_name[2]}, {random_name[3]}')
@@ -74,17 +87,213 @@ class Tests9Class(Main):
 
     def task_one(self, parms):
         index = random.choice([-1, 1])
-
         return {
             'options': [parms[0], parms[1], parms[2]],
             'request': {
-                'A': f'{parms[0]}|{parms[1]};124567',
+                'А': f'{parms[0]}|{parms[1]};124567',
                 'Б': f'{parms[2]}&{parms[1]};67',
                 'В': f'{parms[0]};1456',
                 'Г': f'{parms[2]}|{parms[1]}|{parms[0]};all'
             },
             'question': self.questions[index],
             'answer': 'БВАГ'[::index]
+        }
+
+    def task_two(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}|{parms[1]};124567',
+                'Б': f'{parms[0]}|{parms[2]}|{parms[1]};all',
+                'В': f'{parms[2]}&{parms[1]}&{parms[0]};6',
+                'Г': f'{parms[1]}&{parms[2]};67'
+            },
+            'question': self.questions[index],
+            'answer': 'ВГАБ'[::index]
+        }
+
+    def task_three(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]};46',
+                'Б': f'{parms[0]};1456',
+                'В': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Г': f'{parms[0]}|{parms[2]};134567'
+            },
+            'question': self.questions[index],
+            'answer': 'ВАБГ'[::index]
+        }
+
+    def task_four(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2], parms[3]],
+            'request': {
+                'А': f'{parms[0]}|{parms[1]};124567',
+                'Б': f'{parms[0]}&{parms[1]};46',
+                'В': f'{parms[0]}|{parms[1]}|{parms[2]}|{parms[3]};four_all',
+                'Г': f'{parms[0]}|{parms[1]}|{parms[2]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'БАГВ'[::index]
+        }
+
+    def task_five(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2], parms[3]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Б': f'{parms[0]}&{parms[1]};46',
+                'В': f'{parms[0]}|{parms[2]};134567',
+                'Г': f'{parms[2]}&{parms[3]}&{parms[0]}&{parms[1]};four_center'
+            },
+            'question': self.questions[index],
+            'answer': 'ГАБВ'[::index]
+        }
+
+    def task_six(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2], parms[3]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]}&{parms[2]}&{parms[3]};four_center',
+                'Б': f'{parms[1]}|{parms[2]}|{parms[0]};all',
+                'В': f'{parms[1]}|{parms[0]};124567',
+                'Г': f'{parms[1]}&{parms[2]};67'
+            },
+            'question': self.questions[index],
+            'answer': 'АГВБ'[::index]
+        }
+
+    def task_seven(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}|{parms[1]};124567',
+                'Б': f'{parms[2]}&{parms[1]};67',
+                'В': f'{parms[0]};1456',
+                'Г': f'{parms[2]}|{parms[1]}|{parms[0]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'БВАГ'[::index]
+        }
+
+    def task_eight(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]};46',
+                'Б': f'{parms[0]}|{parms[2]};134567',
+                'В': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Г': f'({parms[0]}|{parms[2]})&{parms[1]};467'
+            },
+            'question': self.questions[index],
+            'answer': 'ВАГБ'[::index]
+        }
+
+    def task_nine(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]};46',
+                'Б': f'{parms[0]}|{parms[2]};134567',
+                'В': f'({parms[0]}|{parms[2]})&{parms[1]};467',
+                'Г': f'{parms[0]}|{parms[1]}|{parms[2]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'АВБГ'[::index]
+        }
+
+    def task_ten(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]};46',
+                'Б': f'({parms[0]}|{parms[2]})&{parms[1]};467',
+                'В': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Г': f'{parms[0]}|{parms[2]}|{parms[1]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'ВАБГ'[::index]
+        }
+
+    def task_eleven(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2], parms[3]],
+            'request': {
+                'А': f'({parms[0]}|{parms[1]})&{parms[2]};567',
+                'Б': f'{parms[0]}&{parms[1]}&{parms[2]}&{parms[3]};four_center',
+                'В': f'{parms[0]}&{parms[2]};56',
+                'Г': f'{parms[0]}|{parms[1]}|{parms[2]};all'
+            },
+            'question': self.questions[index],
+            'answer': 'ВАБГ'[::index]
+        }
+    # TODO tasks 12 - 15
+
+    def task_twelve(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}|{parms[1]};124567',
+                'Б': f'{parms[0]}&{parms[2]};56',
+                'В': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Г': f'({parms[0]}&{parms[2]})|{parms[1]};24567'
+            },
+            'question': self.questions[index],
+            'answer': 'ВБГА'[::index]
+        }
+
+    def task_thirteen(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]};46',
+                'Б': f'({parms[0]}&{parms[1]})|{parms[2]};34567',
+                'В': f'{parms[0]}|{parms[1]}|{parms[2]};all',
+                'Г': f'{parms[0]}|{parms[2]};134567'
+            },
+            'question': self.questions[index],
+            'answer': 'АБГВ'[::index]
+        }
+
+    def task_fourteen(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'Б': f'{parms[0]}|{parms[1]}|{parms[2]};all',
+                'В': f'({parms[0]}&{parms[1]})|{parms[2]};34567',
+                'Г': f'{parms[0]}&{parms[1]};46'
+            },
+            'question': self.questions[index],
+            'answer': 'АГВБ'[::index]
+        }
+
+    def task_fifteen(self, parms):
+        index = random.choice([-1, 1])
+        return {
+            'options': [parms[0], parms[1], parms[2]],
+            'request': {
+                'А': f'({parms[2]}&{parms[1]})|{parms[0]};14567',
+                'Б': f'{parms[0]}&{parms[1]}&{parms[2]};6',
+                'В': f'{parms[0]}|{parms[1]}|{parms[2]};all',
+                'Г': f'{parms[1]}|{parms[2]};234567'
+            },
+            'question': self.questions[index],
+            'answer': 'БАГВ'[::index]
         }
 
 
@@ -104,7 +313,7 @@ class Tests10Class(Main):
             self.task_six(random_name),
             self.task_seven(random_name),
             self.task_eight(random_name),
-            self.task_nine(random_name),
+            self.task_nine(random_name)
         ]
         try:
             logging.info(f'Search by parameters: {random_name[0]}, {random_name[1]}, {random_name[2]}')
@@ -196,7 +405,7 @@ class Tests10Class(Main):
                 f'{parm_three}&{parm_two}'
             ],
             'find': [find_one, find_two, find_three, find_four, find_five, find_six],
-            'question': f'{parm_one}|{parm_two}|{parm_three};1234567',
+            'question': f'{parm_one}|{parm_two}|{parm_three};all',
             'answer': answer,
             'explanation': explanation
         }
