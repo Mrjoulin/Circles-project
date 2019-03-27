@@ -9,17 +9,12 @@ from PyQt5.QtCore import Qt, pyqtSlot, QEvent
 from circles.utils.utils import *
 from circles.db.db import *
 
-logging.basicConfig(
-    format='[%(filename)s:%(lineno)s - %(funcName)20s()]%(levelname)s:%(name)s:%(message)s',
-    level=logging.INFO
-)
-
 user_information = {'success': False, 'payload': {}}
 NUMBER_OF_TASKS_9_CLASS = 15
 NUMBER_OF_TASKS_10_CLASS = 9
 
-class Main(QWidget):
 
+class Main(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -141,7 +136,9 @@ class Main(QWidget):
 
     def sign_up(self):
         self.delete_items_of_layout(self.layout())
-        sip.delete(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
+
 
         logging.info('Sign up window started')
         self.init_sign()
@@ -151,23 +148,27 @@ class Main(QWidget):
         self.show()
 
     def init_sign(self):
-        titel = QLabel('Пожалуйста, введите свои данные:')
+        title = QLabel('Пожалуйста, введите свои данные:')
         name = QLabel('Имя')
         surname = QLabel('Фамилия')
+        patronymic = QLabel('Отчество')
         email = QLabel('Email')
         password = QLabel('Пароль( > 6 символов)')
         repeatPassword = QLabel('Повторите пароль')
 
-        titel.setAlignment(Qt.AlignCenter)
-        titel.setFont(QFont("Montserrat Bold", 18))
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Montserrat Bold", 18))
         name.setFont(QFont('Montserrat Medium'))
         surname.setFont(QFont('Montserrat Medium'))
+        patronymic.setFont(QFont("Montserrat Medium"))
         email.setFont(QFont('Montserrat Medium'))
         password.setFont(QFont('Montserrat Medium'))
         repeatPassword.setFont(QFont('Montserrat Medium'))
 
         self.nameRegistrationEdit = QLineEdit(self)
         self.surnameRegistrationEdit = QLineEdit(self)
+        self.patronymicRegistrationEdit = QLineEdit(self)
+        self.patronymicRegistrationEdit.setPlaceholderText('Не обязательное поле')
         self.emailRegistrationEdit = QLineEdit(self)
         self.passwordRegistrationEdit = QLineEdit(self)
         self.passwordRegistrationEdit.setEchoMode(QLineEdit.Password)
@@ -182,9 +183,10 @@ class Main(QWidget):
         continueButton.clicked.connect(self.sign_up_button_click)
 
         info = [
-            [titel],
+            [title],
             [name, self.nameRegistrationEdit],
             [surname, self.surnameRegistrationEdit],
+            [patronymic, self.patronymicRegistrationEdit],
             [email, self.emailRegistrationEdit],
             [password, self.passwordRegistrationEdit],
             [repeatPassword, self.repeatPasswordRegistrationEdit],
@@ -214,19 +216,25 @@ class Main(QWidget):
             logging.info('Data checking')
             alph = 'абвгдеёжзийклмнопрстуфхцчшщыьъэюя'
             error_status = False
-            if self.nameRegistrationEdit.text() == '' or self.surnameRegistrationEdit.text() == '' or self.emailRegistrationEdit.text() == '':
+            if self.nameRegistrationEdit.text() == '' or self.surnameRegistrationEdit.text() == '' \
+                    or self.emailRegistrationEdit.text() == '':
                 self.on_error('Пожалуйста, заполните все поля')
                 return
             for letter in self.nameRegistrationEdit.text().lower():
                 if letter not in alph:
-                    self.on_error('Имя должно состоять только из букв Российского алфавита')
+                    self.on_error('Имя должно состоять только из букв русского алфавита')
                     self.nameRegistrationEdit.setStyleSheet("background-color: rgb(255, 50, 50)")
                     error_status = True
 
             for letter in self.surnameRegistrationEdit.text().lower():
                 if letter not in alph:
-                    self.on_error('Фамилия должна состоять только из букв Российского алфавита')
+                    self.on_error('Фамилия должна состоять только из букв русского алфавита')
                     self.surnameRegistrationEdit.setStyleSheet("background-color: rgb(255, 50, 50)")
+                    error_status = True
+            for letter in self.patronymicRegistrationEdit.text().lower():
+                if letter not in alph:
+                    self.on_error('Отчество должно состоять только из букв русского алфавита')
+                    self.patronymicRegistrationEdit.setStyleSheet("background-color: rgb(255, 50, 50)")
                     error_status = True
             try:
                 if is_registered_email(self.emailRegistrationEdit.text()):
@@ -270,6 +278,7 @@ class Main(QWidget):
                 logging.info('Set data in database')
                 user_information['payload'] = add_user(name=self.nameRegistrationEdit.text(),
                                                        surname=self.surnameRegistrationEdit.text(),
+                                                       patronymic=self.patronymicRegistrationEdit.text(),
                                                        email=self.emailRegistrationEdit.text(),
                                                        password=self.passwordRegistrationEdit.text())
                 user_information['success'] = True
@@ -284,7 +293,8 @@ class Main(QWidget):
 
     def login(self):
         self.delete_items_of_layout(self.layout())
-        sip.delete(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
 
         logging.info('Login window started')
         self.init_login()
@@ -294,14 +304,14 @@ class Main(QWidget):
         self.show()
 
     def init_login(self):
-        titel = QLabel('Введите свой email и пароль,\n чтобы войти в аккаунт')
+        title = QLabel('Введите свой email и пароль,\n чтобы войти в аккаунт')
         email = QLabel('Email')
         password = QLabel('Пароль')
 
-        titel.setAlignment(Qt.AlignCenter)
-        fontTitel = QFont("Montserrat Medium", 20)
-        fontTitel.setBold(True)
-        titel.setFont(fontTitel)
+        title.setAlignment(Qt.AlignCenter)
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
         email.setFont(QFont('Montserrat Medium'))
         password.setFont(QFont('Montserrat Medium'))
 
@@ -316,7 +326,7 @@ class Main(QWidget):
         continueButton.clicked.connect(self.login_button_click)
 
         info = [
-            [titel],
+            [title],
             [email, self.emailLoginEdit],
             [password, self.passwordLoginEdit],
             [cancelButton, continueButton]
@@ -385,7 +395,7 @@ class Main(QWidget):
         if user_information['success']:
             info = user_information['payload']
             user_status_sign = QLabel("Вход выполнен:")
-            user_status_name = QLabel(info['name'] + ' ' + info['surname'])
+            user_status_name = QLabel(info['surname'] + ' ' + info['name'] + ' ' + info['patronymic'])
             user_status_email = QLabel(info['email'])
 
             user_status_name.setStyleSheet("text-decoration: underline; color: blue;")
@@ -425,7 +435,6 @@ class Main(QWidget):
         self.teacher_option_edit = QLineEdit(self)
         teacher_option_ok_button = QPushButton('ОК', self)
         teacher_option_ok_button.setStyleSheet("background-color: rgb(223, 209, 21)")
-        teacher_option_ok_button.adjustSize()
         teacher_option_widgets = QHBoxLayout()
         teacher_option_widgets.addWidget(self.teacher_option_edit)
         teacher_option_widgets.addWidget(teacher_option_ok_button)
@@ -439,7 +448,7 @@ class Main(QWidget):
 
         for item in [topics_for_6_7_classes, topics_for_8_9_classes, topics_for_10_11_classes]:
             item.setStyleSheet("background-color: rgb(223, 209, 21)")
-            item.clicked.connect(self.topics_button_click)
+            item.clicked.connect(self.task_button_click)
 
         info = [
             [
@@ -482,20 +491,259 @@ class Main(QWidget):
         self.login()
 
     def create_teacher_option(self):
+        #if not user_information['success']:
+        #   self.on_error('Для испольования данной функции\nвы должны быть зарегестрированны')
+        #    return
+        self.delete_items_of_layout(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
+
+        logging.info('Teacher option window started')
+        self.init_teacher_option()
+
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QColor(self.backgroundRad, self.backgroundGreen, self.backgroundBlue))
+        self.setPalette(p)
+        logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
+
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+        self.adjustSize()
+        self.setGeometry(300, 200, 600, 300)
+        self.setWindowTitle('Teacher Option')
+        self.show()
+
+    def init_teacher_option(self):
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+
+        title = QLabel('Создать вариант')
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
+
+        topic_box = QHBoxLayout()
+        topic_box.setSpacing(10)
+        topic = QLabel('Тема: ')
+        topic.setFont(QFont("Montserrat Medium", 16))
+        self.topic_edit = QLineEdit()
+        self.topic_edit.setPlaceholderText('Введите сюда тему варианта')
+        topic_box.addWidget(topic)
+        topic_box.addWidget(self.topic_edit)
+
+        class_of_task = QHBoxLayout()
+        class_of_task_text = QLabel('Задания, ориентируемые на')
+        class_of_task_text.setFont(QFont("Montserrat Medium", 14))
+        self.class_of_task_combo = QComboBox()
+        self.class_of_task_combo.addItems(['5 класс', '6 класс', '7 класс', '8 класс',
+                                           '9 класс', '10 класс', '11 класс', 'любой класс'])
+        class_of_task.addWidget(class_of_task_text)
+        class_of_task.addWidget(self.class_of_task_combo)
+
+        procent = QVBoxLayout()
+        procent.setSpacing(5)
+        procent.addStretch(1)
+        procent_of_right_in_tasks = QLabel('Процент правильных ответов для оценки:')
+        procent_of_right_in_tasks.setFont(QFont("Montserrat Medium", 14))
+        procent.addWidget(procent_of_right_in_tasks)
+
+        procents_for_mark = {'5': '90', '4': '75', '3': '50'}
+
+        self.procent_of_right_for_5 = QLineEdit()
+        self.procent_of_right_for_4 = QLineEdit()
+        self.procent_of_right_for_3 = QLineEdit()
+
+        for mark, procents in procents_for_mark.items():
+            line = QHBoxLayout()
+            line.addStretch(1)
+
+            text_line = QLabel(f'% - "{mark}"')
+            text_line.setFont(QFont("Montserrat Medium", 14))
+
+            default = QLabel(f'(по умолчанию {procents}%)')
+            default.setFont(QFont("Montserrat Medium", 14))
+            default.setStyleSheet("color: grey")
+
+            if mark == '5':
+                line.addWidget(self.procent_of_right_for_5)
+            elif mark == '4':
+                line.addWidget(self.procent_of_right_for_4)
+            else:
+                line.addWidget(self.procent_of_right_for_3)
+            line.addWidget(text_line)
+            line.addWidget(default)
+            line.setAlignment(Qt.AlignLeft)
+            procent.addLayout(line)
+
+        self.check_box_mark = QCheckBox('Показывать оценку по окончанию прохождения теста', self)
+        self.check_box_mark.setChecked(True)
+        procent.addWidget(self.check_box_mark)
+
+        number_of_tasks = QHBoxLayout()
+        number_of_tasks.addStretch(1)
+        number_of_tasks_text = QLabel("Количество задач: ")
+        number_of_tasks_text.setFont(QFont("Montserrat Medium", 14))
+        number_of_tasks_text_default = QLabel('(можно оставить незаполненным)')
+        number_of_tasks_text_default.setFont(QFont("Montserrat Medium", 12))
+        number_of_tasks_text_default.setStyleSheet('color: grey;')
+        self.number_of_tasks_edit = QLineEdit()
+        number_of_tasks.addWidget(number_of_tasks_text)
+        number_of_tasks.addWidget(self.number_of_tasks_edit)
+        number_of_tasks.addWidget(number_of_tasks_text_default)
+
+        buttons = QHBoxLayout()
+        buttons.setSpacing(10)
+        buttons.addStretch(1)
+        cancelButton = QPushButton('Отмена', self)
+        continueButton = QPushButton('Приступить', self)
+        cancelButton.setStyleSheet("background-color: rgb(223, 209, 21)")
+        continueButton.setStyleSheet("background-color: rgb(223, 209, 21)")
+        cancelButton.clicked.connect(self.menu)
+        continueButton.clicked.connect(self.teacher_option_button_click)
+        buttons.addWidget(cancelButton)
+        buttons.addWidget(continueButton)
+
+        layout.addWidget(title)
+        layout.addLayout(topic_box)
+        layout.addLayout(class_of_task)
+        layout.addLayout(procent)
+        layout.addLayout(number_of_tasks)
+        layout.addLayout(buttons)
+
+        layout.setAlignment(Qt.AlignLeft)
+        logging.info('Set layout in teacher option')
+        self.setLayout(layout)
+
+    def teacher_option_button_click(self):
+        if self.topic_edit.text() == '':
+            self.on_error('Введите тему варианта!')
+            return
+
+        combo_text = self.class_of_task_combo.currentText()
+        self.number_of_task = 0
+        if combo_text == '5 класс' or combo_text == '6 класс' or combo_text == '7 класс' or combo_text == 'любой класс':
+            self.teacher_option_task_usual()
+        elif combo_text == '8 класс' or combo_text == '9 класс':
+            self.teacher_option_task_9_class()
+        else:
+            self.teacher_option_task_10_class()
+
+    def teacher_option_task_usual(self):
+        self.number_of_task += 1
+
+        grid = QGridLayout()
+
+        title = QLabel(f'Задача №{str(self.number_of_task)}')
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
+
+        task = QVBoxLayout()
+        task.addStretch(1)
+        text_task = QLabel('Текст задачи:')
+        text_task.setFont(QFont("Montserrat Medium", 14))
+        self.text_task = QTextEdit()
+        self.text_task.setPlaceholderText('Введите текст задачи сюда')
+        buttons_table = QHBoxLayout()
+        buttons_table.setSpacing(50)
+        button_9_class = QPushButton('Таблица 8-9 класс')
+        button_9_class.setStyleSheet("background-color: rgb(223, 209, 21)")
+        button_9_class.clicked.connect(self.teacher_option_task_9_class)
+        button_10_class = QPushButton('Таблица 10-11 класс')
+        button_10_class.setStyleSheet("background-color: rgb(223, 209, 21)")
+        button_10_class.clicked.connect(self.teacher_option_task_10_class)
+        buttons_table.addWidget(button_9_class)
+        buttons_table.addWidget(button_10_class)
+        task.addWidget(text_task)
+        task.addWidget(self.text_task)
+        task.addLayout(buttons_table)
+
+        photo = QLabel(self)
+        namePhoto = 'photo/TestCircles.jpg'
+        pixmap = QPixmap(namePhoto)
+        pixmap2 = pixmap.scaled(300, 300, Qt.KeepAspectRatio)
+        photo.setPixmap(pixmap2)
+        logging.info(f"Add photo '{namePhoto}' in teacher options window")
+
+        answer = QHBoxLayout()
+        answer.setSpacing(5)
+        answer_text = QLabel('Ответ:')
+        answer_text.setFont(QFont("Montserrat Medium", 14))
+        self.answer_edit = QLineEdit()
+        self.answer_edit.setPlaceholderText('Введите сюда ответ')
+        answer_picture = QLabel('Сектора кругов Эйлера:')
+        answer_picture.setFont(QFont("Montserrat Medium", 14))
+        self.answer_picture_edit = QLineEdit()
+        self.answer_picture_edit.setPlaceholderText('ТОЛЬКО номера секторов')
+        answer.addWidget(answer_text)
+        answer.addWidget(self.answer_edit)
+        answer.addWidget(answer_picture)
+        answer.addWidget(self.answer_picture_edit)
+
+        explanation = QVBoxLayout()
+        explanation.setSpacing(5)
+        explanation.addStretch(1)
+        explanation_text = QLabel('Объяснение задачи:')
+        explanation_text.setFont(QFont("Montserrat Medium", 14))
+        self.explanation_edit = QTextEdit()
+        self.explanation_edit.setPlaceholderText('Введите сюда объяснение задачи')
+        explanation.addWidget(explanation_text)
+        explanation.addWidget(self.explanation_edit)
+
+        buttons = QHBoxLayout()
+        buttons.setSpacing(10)
+        continue_button = QPushButton('Продолжить')
+        continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
+        continue_button.clicked.connect(self.teacher_option_task_button_click)
+        exit_button = QPushButton('Завершить')
+        exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
+        exit_button.clicked.connect(self.exit_button_click)
+        buttons.addWidget(exit_button)
+        buttons.addWidget(continue_button)
+
+        grid.addWidget(title, 0, 0)
+        grid.addLayout(task, 1, 0)
+        grid.addWidget(photo, 1, 1)
+        grid.addLayout(answer, 2, 0, 1, 2)
+        grid.addLayout(explanation, 3, 0, 1, 2)
+        grid.addLayout(buttons, 4, 1)
+
+        if self.layout() is not None:
+            self.delete_items_of_layout(self.layout())
+            sip.delete(self.layout())
+
+        logging.info('Set layout in task')
+        self.setLayout(grid)
+
+        self.adjustSize()
+        self.setGeometry(300, 150, 750, 300)
+        self.setWindowTitle('Teacher Task')
+        self.show()
+
+    def teacher_option_task_9_class(self):
         pass
 
-    def topics_button_click(self):
+    def teacher_option_task_10_class(self):
+        pass
+
+    def teacher_option_task_button_click(self):
+        sender = self.sender()
+
+    def task_button_click(self):
         sender = self.sender()
         logging.info(f"The '{sender.text()}' button was pressed")
         self.class_of_tasks = sender.text()
-        self.topics_window()
+        self.task_window()
 
-    def topics_window(self):
+    def task_window(self):
         self.delete_items_of_layout(self.layout())
-        sip.delete(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
 
         logging.info('Topics window started')
-        self.init_topics()
+        self.init_task()
 
         self.setAutoFillBackground(True)
         p = self.palette()
@@ -509,7 +757,7 @@ class Main(QWidget):
         self.setWindowTitle('Tests')
         self.show()
 
-    def init_topics(self):
+    def init_task(self):
         self.number_of_task = 0
         self.right_tasks = 0
         self.already_been = []
@@ -522,11 +770,11 @@ class Main(QWidget):
 
         grid = QGridLayout()
 
-        titel = QLabel(f'Задача №{str(self.number_of_task)}')
-        fontTitel = QFont("Montserrat Medium", 20)
-        fontTitel.setBold(True)
-        titel.setFont(fontTitel)
-        titel.setAlignment(Qt.AlignCenter)
+        title = QLabel(f'Задача №{str(self.number_of_task)}')
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
 
         if self.layout() is not None:
             procent_of_rigth = QLabel(f'Верно решёных - {str(self.right_tasks*100 // (self.number_of_task - 1))} %')
@@ -568,24 +816,24 @@ class Main(QWidget):
             self.answer_edit = QLineEdit()
             self.answer_edit.setPlaceholderText('Введите сюда ваш ответ (только число)')
 
-        buttos = QHBoxLayout()
-        buttos.setSpacing(10)
-        buttos.addStretch(1)
+        buttons = QHBoxLayout()
+        buttons.setSpacing(10)
+        buttons.addStretch(1)
         continue_button = QPushButton('Далее')
         continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
         continue_button.clicked.connect(self.answer_task)
         exit_button = QPushButton('Завершить')
         exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
         exit_button.clicked.connect(self.exit_button_click)
-        buttos.addWidget(exit_button)
-        buttos.addWidget(continue_button)
+        buttons.addWidget(exit_button)
+        buttons.addWidget(continue_button)
 
-        grid.addWidget(titel, 0, 0)
+        grid.addWidget(title, 0, 0)
 
         grid.addLayout(text_task, 1, 0)
         grid.addWidget(self.overlay_photo('new', None), 1, 1)
         grid.addWidget(self.answer_edit, 2, 0)
-        grid.addLayout(buttos, 2, 1)
+        grid.addLayout(buttons, 2, 1)
 
         if self.layout() is not None:
             grid.addWidget(procent_of_rigth, 0, 1)
@@ -598,10 +846,10 @@ class Main(QWidget):
     def get_text_task_8_9_class(self):
         text_task = QVBoxLayout()
         #text_task.addStretch(1)
-        titel_request = QLabel('Запросы к поисковому серверу')
-        titel_request.setFont(QFont('Montserrat Medium', 16))
-        titel_request.setAlignment(Qt.AlignCenter)
-        text_task.addWidget(titel_request)
+        title_request = QLabel('Запросы к поисковому серверу')
+        title_request.setFont(QFont('Montserrat Medium', 16))
+        title_request.setAlignment(Qt.AlignCenter)
+        text_task.addWidget(title_request)
         for letter, request in self.info['request'].items():
             request_text, request_number = request.split(';')
             self.requests[request_text] = request_number
@@ -620,13 +868,13 @@ class Main(QWidget):
 
     def get_text_task_10_11_class(self):
         text_task = QGridLayout()
-        titel_find = QLabel('Найдено страниц')
-        titel_request = QLabel('Запрос')
-        for item in [titel_request, titel_find]:
+        title_find = QLabel('Найдено страниц')
+        title_request = QLabel('Запрос')
+        for item in [title_request, title_find]:
             item.setFont(QFont('Montserrat Medium', 14))
             item.setFrameStyle(QFrame.Box)
-        text_task.addWidget(titel_request, 0, 0)
-        text_task.addWidget(titel_find, 0, 1)
+        text_task.addWidget(title_request, 0, 0)
+        text_task.addWidget(title_find, 0, 1)
         row = 1
         for request, find in zip(self.info['request'], self.info['find']):
             position = 0
@@ -661,19 +909,19 @@ class Main(QWidget):
 
         if self.answer_edit.text().upper() == self.info['answer']:
             logging.info('Right answer')
-            titel = QLabel('Верный ответ!')
-            titel.setStyleSheet("color: green")
+            title = QLabel('Верный ответ!')
+            title.setStyleSheet("color: green")
             if self.is_new_task:
                 self.right_tasks += 1
         else:
             logging.info('Wrong answer')
-            titel = QLabel('Неправильный ответ!')
-            titel.setStyleSheet("color: red")
+            title = QLabel('Неправильный ответ!')
+            title.setStyleSheet("color: red")
         self.is_new_task = False
-        fontTitel = QFont("Montserrat Medium", 20)
-        fontTitel.setBold(True)
-        titel.setFont(fontTitel)
-        titel.setAlignment(Qt.AlignCenter)
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
 
         decision_status = QVBoxLayout()
         decision_status.setSpacing(1)
@@ -741,7 +989,7 @@ class Main(QWidget):
         buttons.addWidget(exit_button)
         buttons.addWidget(continue_button)
 
-        grid.addWidget(titel, 0, 0)
+        grid.addWidget(title, 0, 0)
         grid.addLayout(decision_status, 0, 1)
         grid.addLayout(explanation_block, 1, 0)
         grid.addWidget(self.overlay_photo('answer', self.answer_photo), 1, 1)
@@ -765,19 +1013,19 @@ class Main(QWidget):
         try:
             if int(self.answer_edit.text()) == self.info['answer']:
                 logging.info('Right answer')
-                titel = QLabel('Верный ответ!')
-                titel.setStyleSheet("color: green")
+                title = QLabel('Верный ответ!')
+                title.setStyleSheet("color: green")
                 if self.is_new_task:
                     self.right_tasks += 1
             else:
                 logging.info('Wrong answer')
-                titel = QLabel('Неправильный ответ!')
-                titel.setStyleSheet("color: red")
+                title = QLabel('Неправильный ответ!')
+                title.setStyleSheet("color: red")
             self.is_new_task = False
-            fontTitel = QFont("Montserrat Medium", 20)
-            fontTitel.setBold(True)
-            titel.setFont(fontTitel)
-            titel.setAlignment(Qt.AlignCenter)
+            fontTitle = QFont("Montserrat Medium", 20)
+            fontTitle.setBold(True)
+            title.setFont(fontTitle)
+            title.setAlignment(Qt.AlignCenter)
         except ValueError:
             self.on_error('В ответе должно содержаться одно число -\nколичество страниц найденых по запросу')
             return
@@ -833,7 +1081,7 @@ class Main(QWidget):
         buttons.addWidget(exit_button)
         buttons.addWidget(continue_button)
 
-        grid.addWidget(titel, 0, 0)
+        grid.addWidget(title, 0, 0)
         grid.addLayout(decision_status, 0, 1)
         grid.addWidget(exp, 1, 0)
         grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
@@ -882,11 +1130,11 @@ class Main(QWidget):
             self.setPalette(p)
             logging.info(f'Set background rgb{self.backgroundRad, self.backgroundGreen, self.backgroundBlue}')
 
-            titel = QLabel('Введите ваш вопрос по задаче в это поле')
-            fontTitel = QFont("Montserrat Medium", 20)
-            fontTitel.setBold(True)
-            titel.setFont(fontTitel)
-            titel.setAlignment(Qt.AlignCenter)
+            title = QLabel('Введите ваш вопрос по задаче в это поле')
+            fontTitle = QFont("Montserrat Medium", 20)
+            fontTitle.setBold(True)
+            title.setFont(fontTitle)
+            title.setAlignment(Qt.AlignCenter)
 
             self.question_edit = QTextEdit()
             self.question_edit.setPlaceholderText('Введите сюда ваш вопрос')
@@ -905,7 +1153,7 @@ class Main(QWidget):
 
             content = QVBoxLayout(self)
             content.addSpacing(10)
-            content.addWidget(titel)
+            content.addWidget(title)
             content.addWidget(self.question_edit)
             content.addLayout(buttons)
 
@@ -926,12 +1174,12 @@ class Main(QWidget):
             return
 
         if self.question_edit.toPlainText() != '':
-            try:
+            if user_information['success']:
                 add_user_question_for_task(user_information['payload']['email'],
                                            self.question_edit.toPlainText(),
                                            self.class_of_tasks,
                                            self.number_of_task)
-            except KeyError:
+            else:
                 self.on_error('Вопрос могут задавать только\n зарегестрированные пользователи')
                 return
         else:
@@ -939,20 +1187,21 @@ class Main(QWidget):
             return
 
         self.user_can_ask_a_question = False
-        titel = QLabel("Спсибо за ваш вопрос!\nВ скором времени мы вам ответим.", self)
-        fontTitel = QFont("Montserrat Medium", 20)
-        fontTitel.setBold(True)
-        titel.setFont(fontTitel)
-        titel.setAlignment(Qt.AlignCenter)
+        title = QLabel("Спсибо за ваш вопрос!\nВ скором времени мы вам ответим.", self)
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
 
         btn = QPushButton('Вернуться')
         btn.setStyleSheet("background-color: rgb(223, 209, 21)")
         btn.clicked.connect(self.answer_task)
 
         self.delete_items_of_layout(self.layout())
-        sip.delete(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
         box = QVBoxLayout()
-        box.addWidget(titel)
+        box.addWidget(title)
         box.addWidget(btn)
 
         self.setLayout(box)
@@ -1061,10 +1310,9 @@ class Main(QWidget):
         QMessageBox().critical(self, 'Внимание!', e)
 
 
-if __name__ == '__main__':
+def start_app():
     app = QApplication(sys.argv)
 
-    logging.info('Start app')
     ex = Main()
 
     sys.exit(app.exec_())

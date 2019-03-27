@@ -3,11 +3,14 @@ import logging
 from openpyxl import load_workbook
 
 nameDatabase = 'circles-database'
+# all collections:
+#   user
+#   tasks
+#   question_about_task
 
 
 def connect_to_database_and_get_a_collection(nameDB, nameCollection):
     logging.info('Connecting to MongoDB Client')
-    #client = pymongo.MongoClient("mongodb+srv://kvm202.vdsina.ru: 5980/")
     client = pymongo.MongoClient("mongodb://v108909.hosted-by-vdsina.ru:27017")
 
     logging.info('Get a database:' + nameDB)
@@ -19,12 +22,13 @@ def connect_to_database_and_get_a_collection(nameDB, nameCollection):
     return col
 
 
-def add_user(name, surname, email, password):
+def add_user(name, surname, patronymic, email, password):
     user = (connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='user'))
 
     post = {
             'name': name,
             'surname': surname,
+            'patronymic': patronymic,
             'email': email,
             'password': password
             }
@@ -110,7 +114,9 @@ def get_and_remove_all_data_in_collection(collection):
     data = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection=collection)
 
     logging.info(f'Get all docs in {collection} collection')
-    docs = data.find()
+    docs = []
+    for item in data.find():
+        docs += [item]
 
     logging.info(f'Remove all docs in {collection} collection')
     data.delete_many({})

@@ -2,7 +2,7 @@ import logging
 import requests
 import random
 from PyQt5.QtWidgets import *
-from circles.init import *
+from circles.app import *
 
 
 def check_network_connection():
@@ -238,7 +238,6 @@ class Tests9Class(Main):
             'question': self.questions[index],
             'answer': 'ВАБГ'[::index]
         }
-    # TODO tasks 12 - 15
 
     def task_twelve(self, parms):
         index = random.choice([-1, 1])
@@ -324,7 +323,6 @@ class Tests10Class(Main):
             # 'question': question to find
             # 'answer': answer to question
             # 'explanation': explanation of task
-            # TODO create txt file to write a names and with connection of network - get updates
         except Exception as e:
             logging.error('Error: ' + str(e))
             self.return_task = {'success': False, 'payload': {}}
