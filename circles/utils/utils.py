@@ -2,7 +2,7 @@ import logging
 import requests
 import random
 from PyQt5.QtWidgets import *
-from circles.app import *
+from circles.__init__ import *
 
 
 def check_network_connection():
@@ -46,7 +46,7 @@ names = [
 ]
 
 
-class Tests9Class(Main):
+class Tests9Class(QWidget):
     def __init__(self, number_of_task, already_been):
         QWidget.__init__(self)
         self.questions = ['', 'возрастания', 'убывания']
@@ -296,7 +296,7 @@ class Tests9Class(Main):
         }
 
 
-class Tests10Class(Main):
+class Tests10Class(QWidget):
     def __init__(self, number_of_task, already_been):
         QWidget.__init__(self)
 

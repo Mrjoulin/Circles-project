@@ -7,6 +7,7 @@ nameDatabase = 'circles-database'
 #   user
 #   tasks
 #   question_about_task
+#   teacher_option
 
 
 def connect_to_database_and_get_a_collection(nameDB, nameCollection):
@@ -122,3 +123,36 @@ def get_and_remove_all_data_in_collection(collection):
     data.delete_many({})
 
     return docs
+
+
+def add_teacher_option(number_option, name_teacher ,topic, number_of_circles, procent_to_5, procent_to_4, procent_to_3,
+                       show_mark, tasks):
+    option = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='teacher_option')
+    logging.info('Add option to collection teacher_option')
+
+    post = {
+        'number_option': number_option,
+        'name_teacher': name_teacher,
+        'topic': topic,
+        'number_of_circles': number_of_circles,
+        'procent_to_5': procent_to_5,
+        'procent_to_4': procent_to_4,
+        'procent_to_3': procent_to_3,
+        'show_mark': show_mark,
+        'tasks': tasks
+    }
+
+    logging.info('Insert post: ' + str(post))
+    ins = option.insert_one(post)
+    logging.info(f'Insert ID: {str(ins)}')
+
+
+def get_teacher_option(number_option):
+    options = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='teacher_option')
+    logging.info('Get option drom collection teacher_option')
+
+    for option in options.find():
+        if option['number_option'] == int(number_option):
+            return True, option
+
+    return False, {}

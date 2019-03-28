@@ -1,13 +1,20 @@
 import sys
 import sip
+import random
 from PIL import Image, ImageDraw, ImageFont
 import logging
+from functools import partial
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt, pyqtSlot, QEvent
 
 from circles.utils.utils import *
 from circles.db.db import *
+
+logging.basicConfig(
+    format='[%(filename)s:%(lineno)s - %(funcName)20s()]%(levelname)s:%(name)s:%(message)s',
+    level=logging.INFO
+)
 
 user_information = {'success': False, 'payload': {}}
 NUMBER_OF_TASKS_9_CLASS = 15
@@ -425,7 +432,7 @@ class Main(QWidget):
 
         teacher_option = QLabel('Для решения варианта учителя,\nвведите номер варианта')
         create_option = QLabel('Вы можете создать свой вариант')
-        auth_tests = QLabel('Или выберете нужный класс для\nтренеровки решения задач')
+        auth_tests = QLabel('Или выберете нужный класс для\nтренировки решения задач')
 
         for item in [teacher_option, create_option, auth_tests]:
             item.setFont(QFont('Montserrat Medium', 16))
@@ -435,6 +442,7 @@ class Main(QWidget):
         self.teacher_option_edit = QLineEdit(self)
         teacher_option_ok_button = QPushButton('ОК', self)
         teacher_option_ok_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+        teacher_option_ok_button.clicked.connect(self.get_teacher_option_button_click)
         teacher_option_widgets = QHBoxLayout()
         teacher_option_widgets.addWidget(self.teacher_option_edit)
         teacher_option_widgets.addWidget(teacher_option_ok_button)
@@ -490,10 +498,78 @@ class Main(QWidget):
     def mouse_press_event_login(self, event):
         self.login()
 
+    def get_teacher_option_button_click(self):
+        if self.teacher_option_edit.text().isdigit():
+            state, self.info = get_teacher_option(self.teacher_option_edit.text())
+            if state:
+                self.get_teacher_option()
+            else:
+                self.on_error('Такого варианта не сущестует!')
+        else:
+            self.on_error('Номером варианта является число!')
+
+    def get_teacher_option(self):
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+
+        title = QLabel('Решить вариант')
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
+
+        topic = QLabel(f'Тема: {self.info["topic"]}')
+        topic.setFont(QFont("Montserrat Medium", 16))
+        topic.setAlignment(Qt.AlignCenter)
+
+        name_teacher = QLabel(f'Учитель: {self.info["name_teacher"]}')
+        name_teacher.setFont(QFont("Montserrat Medium", 14))
+        name_teacher.setAlignment(Qt.AlignCenter)
+
+        if self.info['show_mark']:
+            procents = QVBoxLayout()
+            procents.addStretch(1)
+            procents.addSpacing(5)
+            procent_titel = QLabel("Процент верных ответов:")
+            procent_titel.setFont(QFont("Montserrat Medium", 14))
+            procent_titel.setAlignment(Qt.AlignCenter)
+            procents.addWidget(procent_titel)
+            for i in range(5, 2, -1):
+                procent_text = f"procent_to_{str(i)}"
+                procent = QLabel(f'На оценку {str(i)} - {self.info[procent_text]}%')
+                procent.setFont(QFont("Montserrat Medium", 14))
+                procent.setAlignment(Qt.AlignCenter)
+                procents.addWidget(procent)
+
+        buttons = QHBoxLayout()
+        buttons.setSpacing(10)
+        buttons.addStretch(1)
+        cancelButton = QPushButton('Отмена', self)
+        continueButton = QPushButton('Приступить', self)
+        cancelButton.setStyleSheet("background-color: rgb(223, 209, 21)")
+        continueButton.setStyleSheet("background-color: rgb(223, 209, 21)")
+        cancelButton.clicked.connect(self.menu)
+        # continueButton.clicked.connect(self.)
+        buttons.addWidget(cancelButton)
+        buttons.addWidget(continueButton)
+
+        layout.addWidget(title)
+        layout.addWidget(topic)
+        layout.addWidget(name_teacher)
+        if self.info['show_mark']:
+            layout.addLayout(procents)
+        layout.addLayout(buttons)
+
+        self.delete_items_of_layout(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
+
+        self.setLayout(layout)
+
     def create_teacher_option(self):
-        #if not user_information['success']:
-        #   self.on_error('Для испольования данной функции\nвы должны быть зарегестрированны')
-        #    return
+        if not user_information['success']:
+            self.on_error('Для испольования данной функции\nвы должны быть зарегестрированны')
+            return
         self.delete_items_of_layout(self.layout())
         if self.layout() is not None:
             sip.delete(self.layout())
@@ -540,6 +616,14 @@ class Main(QWidget):
                                            '9 класс', '10 класс', '11 класс', 'любой класс'])
         class_of_task.addWidget(class_of_task_text)
         class_of_task.addWidget(self.class_of_task_combo)
+
+        number_of_circles = QHBoxLayout()
+        number_of_circles_text = QLabel('Количество кругов Эйлера:')
+        number_of_circles_text.setFont(QFont("Montserrat Medium", 14))
+        self.number_of_circles_combo = QComboBox()
+        self.number_of_circles_combo.addItems(['3 окружности', '4 окружности'])
+        number_of_circles.addWidget(number_of_circles_text)
+        number_of_circles.addWidget(self.number_of_circles_combo)
 
         procent = QVBoxLayout()
         procent.setSpacing(5)
@@ -607,6 +691,7 @@ class Main(QWidget):
         layout.addWidget(title)
         layout.addLayout(topic_box)
         layout.addLayout(class_of_task)
+        layout.addLayout(number_of_circles)
         layout.addLayout(procent)
         layout.addLayout(number_of_tasks)
         layout.addLayout(buttons)
@@ -614,11 +699,45 @@ class Main(QWidget):
         layout.setAlignment(Qt.AlignLeft)
         logging.info('Set layout in teacher option')
         self.setLayout(layout)
+        self.teacher_tasks = []
+        self.teacher_tasks_appended = False
 
     def teacher_option_button_click(self):
         if self.topic_edit.text() == '':
             self.on_error('Введите тему варианта!')
             return
+
+        if self.procent_of_right_for_5.text().isdigit():
+            if float(self.procent_of_right_for_5.text()) > 100.0 or float(self.procent_of_right_for_5.text()) < 1.0:
+                self.procent_of_right_for_5.setText('90')
+        else:
+            self.procent_of_right_for_5.setText('90')
+
+        if self.procent_of_right_for_4.text().isdigit():
+            if float(self.procent_of_right_for_4.text()) > float(self.procent_of_right_for_5.text()) or\
+                    float(self.procent_of_right_for_4.text()) < 1.0:
+                if 75.0 < float(self.procent_of_right_for_5.text()):
+                    self.procent_of_right_for_4.setText('75')
+                else:
+                    self.procent_of_right_for_4.setText(str(float(self.procent_of_right_for_5.text()) / 2))
+        else:
+            self.procent_of_right_for_4.setText('75')
+
+        if self.procent_of_right_for_3.text().isdigit():
+            if float(self.procent_of_right_for_3.text()) > float(self.procent_of_right_for_4.text()) or\
+                    float(self.procent_of_right_for_3.text()) < 1.0:
+                if 75.0 < float(self.procent_of_right_for_4.text()):
+                    self.procent_of_right_for_3.setText('50')
+                else:
+                    self.procent_of_right_for_3.setText(str(float(self.procent_of_right_for_4.text()) / 2))
+        else:
+            self.procent_of_right_for_3.setText('50')
+
+        if self.number_of_tasks_edit.text().isdigit():
+            if int(self.number_of_tasks_edit.text()) > 20 or int(self.number_of_tasks_edit.text()) < 1:
+                self.number_of_tasks_edit.setText('20')
+        else:
+            self.number_of_tasks_edit.setText('20')
 
         combo_text = self.class_of_task_combo.currentText()
         self.number_of_task = 0
@@ -630,9 +749,23 @@ class Main(QWidget):
             self.teacher_option_task_10_class()
 
     def teacher_option_task_usual(self):
-        self.number_of_task += 1
+        sender = self.sender().text()
+        self.class_of_tasks = 'preview task'
+        self.table_9 = False
+        self.table_10 = False
+        self.no_table = False
+        if int(self.number_of_tasks_edit.text()) == self.number_of_task:
+            self.teacher_option_final_window()
 
-        grid = QGridLayout()
+        if sender != 'Назад':
+            self.teacher_tasks_appended = not self.teacher_tasks_appended
+            self.number_of_task += 1
+            if not self.teacher_tasks_appended:
+                self.teacher_tasks.append(self.task)
+                self.teacher_tasks_appended = True
+
+        layout = QVBoxLayout()
+        layout.setSpacing(10)
 
         title = QLabel(f'Задача №{str(self.number_of_task)}')
         fontTitle = QFont("Montserrat Medium", 20)
@@ -640,43 +773,113 @@ class Main(QWidget):
         title.setFont(fontTitle)
         title.setAlignment(Qt.AlignCenter)
 
+        info_block = QHBoxLayout()
+        info_block.addStretch(1)
+        info_text = QLabel('обязательное поле')
+        info_star = QLabel('*')
+        info_star.setFont(QFont("Montserrat Medium", 14))
+        info_star.setStyleSheet("color: red")
+        info_text.setFont(QFont("Montserrat Medium", 14))
+        info_block.addWidget(info_star)
+        info_block.addWidget(info_text)
+
         task = QVBoxLayout()
         task.addStretch(1)
-        text_task = QLabel('Текст задачи:')
-        text_task.setFont(QFont("Montserrat Medium", 14))
+        text_task = QHBoxLayout()
+        text_task.addStretch(1)
+        text_task_without_star = QLabel('Текст задачи:')
+        text_task_without_star.setFont(QFont("Montserrat Medium", 14))
+        info_star = QLabel('*')
+        info_star.setFont(QFont("Montserrat Medium", 14))
+        info_star.setStyleSheet("color: red")
+        text_task.addWidget(info_star)
+        text_task.addWidget(text_task_without_star)
+        text_task.setAlignment(Qt.AlignLeft)
+        if sender == 'Назад':
+            text = self.text_task.toPlainText()
+        else:
+            text = ''
         self.text_task = QTextEdit()
         self.text_task.setPlaceholderText('Введите текст задачи сюда')
+        self.text_task.setText(text)
         buttons_table = QHBoxLayout()
         buttons_table.setSpacing(50)
         button_9_class = QPushButton('Таблица 8-9 класс')
         button_9_class.setStyleSheet("background-color: rgb(223, 209, 21)")
-        button_9_class.clicked.connect(self.teacher_option_task_9_class)
+        #button_9_class.clicked.connect(self.teacher_option_task_usual)
         button_10_class = QPushButton('Таблица 10-11 класс')
         button_10_class.setStyleSheet("background-color: rgb(223, 209, 21)")
-        button_10_class.clicked.connect(self.teacher_option_task_10_class)
+        #button_10_class.clicked.connect(self.teacher_option_task_usual)
         buttons_table.addWidget(button_9_class)
         buttons_table.addWidget(button_10_class)
-        task.addWidget(text_task)
+        task.addLayout(text_task)
         task.addWidget(self.text_task)
         task.addLayout(buttons_table)
 
         photo = QLabel(self)
-        namePhoto = 'photo/TestCircles.jpg'
+        if self.number_of_circles_combo.currentText() == '3 окружности':
+            namePhoto = 'photo/threeCircles.png'
+        else:
+            namePhoto = 'photo/fourCircles.png'
         pixmap = QPixmap(namePhoto)
         pixmap2 = pixmap.scaled(300, 300, Qt.KeepAspectRatio)
         photo.setPixmap(pixmap2)
         logging.info(f"Add photo '{namePhoto}' in teacher options window")
 
+        names_box = QVBoxLayout()
+        names_box.addStretch(1)
+        names_box.setSpacing(5)
+
+        names_title = QLabel('Введите названия множеств:')
+        names_title.setFont(QFont("Montserrat Medium", 14))
+        names_perms = QHBoxLayout()
+        names_perms.setSpacing(10)
+        names_perms.addStretch(1)
+        names_text = ['1: ', '2: ', '3: ']
+        if self.number_of_circles_combo.currentText() == '4 окружности':
+            names_text.append('4: ')
+
+        if sender == 'Назад':
+            text = [i.text() for i in self.names_edits]
+        else:
+            text = ['', '', '', '']
+        self.names_edits = []
+        for label in range(len(names_text)):
+            self.name_edit = QLineEdit()
+            self.name_edit.setPlaceholderText(f'"{str(label + 1)}" по умолчанию')
+            self.name_edit.setText(text[label])
+            text_perm = QLabel(names_text[label])
+            text_perm.setFont(QFont("Montserrat Medium", 14))
+            names_perms.addWidget(text_perm)
+            names_perms.addWidget(self.name_edit)
+            self.names_edits.append(self.name_edit)
+        names_box.addWidget(names_title)
+        names_box.addLayout(names_perms)
+
         answer = QHBoxLayout()
         answer.setSpacing(5)
         answer_text = QLabel('Ответ:')
         answer_text.setFont(QFont("Montserrat Medium", 14))
+        if sender == 'Назад':
+            text = self.answer_edit.text()
+        else:
+            text = ''
         self.answer_edit = QLineEdit()
         self.answer_edit.setPlaceholderText('Введите сюда ответ')
+        self.answer_edit.setText(text)
         answer_picture = QLabel('Сектора кругов Эйлера:')
         answer_picture.setFont(QFont("Montserrat Medium", 14))
+        if sender == 'Назад':
+            text = self.answer_picture_edit.text()
+        else:
+            text = ''
         self.answer_picture_edit = QLineEdit()
         self.answer_picture_edit.setPlaceholderText('ТОЛЬКО номера секторов')
+        self.answer_picture_edit.setText(text)
+        info_star = QLabel('*')
+        info_star.setFont(QFont("Montserrat Medium", 14))
+        info_star.setStyleSheet("color: red")
+        answer.addWidget(info_star)
         answer.addWidget(answer_text)
         answer.addWidget(self.answer_edit)
         answer.addWidget(answer_picture)
@@ -685,16 +888,30 @@ class Main(QWidget):
         explanation = QVBoxLayout()
         explanation.setSpacing(5)
         explanation.addStretch(1)
-        explanation_text = QLabel('Объяснение задачи:')
-        explanation_text.setFont(QFont("Montserrat Medium", 14))
+        explanation_text = QHBoxLayout()
+        explanation_text.addStretch(1)
+        explanation_text_without_star = QLabel('Объяснение задачи:')
+        explanation_text_without_star.setFont(QFont("Montserrat Medium", 14))
+        info_star = QLabel('*')
+        info_star.setFont(QFont("Montserrat Medium", 14))
+        info_star.setStyleSheet("color: red")
+        explanation_text.addWidget(info_star)
+        explanation_text.addWidget(explanation_text_without_star)
+        explanation_text.setAlignment(Qt.AlignLeft)
+        if sender == 'Назад':
+            text = self.explanation_edit.toPlainText()
+        else:
+            text = ''
         self.explanation_edit = QTextEdit()
         self.explanation_edit.setPlaceholderText('Введите сюда объяснение задачи')
-        explanation.addWidget(explanation_text)
+        self.explanation_edit.setText(text)
+        explanation.addLayout(explanation_text)
         explanation.addWidget(self.explanation_edit)
 
         buttons = QHBoxLayout()
         buttons.setSpacing(10)
-        continue_button = QPushButton('Продолжить')
+        buttons.addStretch(1)
+        continue_button = QPushButton('Предпросмотр')
         continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
         continue_button.clicked.connect(self.teacher_option_task_button_click)
         exit_button = QPushButton('Завершить')
@@ -703,33 +920,225 @@ class Main(QWidget):
         buttons.addWidget(exit_button)
         buttons.addWidget(continue_button)
 
-        grid.addWidget(title, 0, 0)
-        grid.addLayout(task, 1, 0)
-        grid.addWidget(photo, 1, 1)
-        grid.addLayout(answer, 2, 0, 1, 2)
-        grid.addLayout(explanation, 3, 0, 1, 2)
-        grid.addLayout(buttons, 4, 1)
+        titel_box = QHBoxLayout()
+        titel_box.addWidget(title)
+        titel_box.addLayout(info_block)
+
+        task_box = QHBoxLayout()
+        task_box.addLayout(task)
+        task_box.addWidget(photo)
+
+        layout.addLayout(titel_box)
+        layout.addLayout(task_box)
+        layout.addLayout(names_box)
+        layout.addLayout(answer)
+        layout.addLayout(explanation)
+        layout.addLayout(buttons)
 
         if self.layout() is not None:
             self.delete_items_of_layout(self.layout())
             sip.delete(self.layout())
 
         logging.info('Set layout in task')
-        self.setLayout(grid)
+        self.setLayout(layout)
+
+        self.no_table = True
 
         self.adjustSize()
         self.setGeometry(300, 150, 750, 300)
         self.setWindowTitle('Teacher Task')
         self.show()
 
-    def teacher_option_task_9_class(self):
-        pass
-
-    def teacher_option_task_10_class(self):
-        pass
-
     def teacher_option_task_button_click(self):
-        sender = self.sender()
+        if self.text_task.toPlainText() == '':
+            self.on_error('Введите текст задачи!')
+            return
+        if self.answer_edit .text() == '':
+            self.on_error('Введите ответ на задачу!')
+            return
+        if self.explanation_edit.toPlainText() == '':
+            self.on_error('Введите объяснение задачи!')
+            return
+
+        names_perms = []
+        for name in range(len(self.names_edits)):
+            if self.names_edits[name].text() != '':
+                names_perms.append(self.names_edits[name].text())
+            else:
+                names_perms.append(str(name + 1))
+
+        payload_9_class = {}
+        payload_10_class = {}
+        payload_other = {}
+
+        if self.table_9:
+            payload_9_class = {
+                'request': {
+                    'А': None,
+                    'Б': None,
+                    'В': None,
+                    'Г': None
+                }
+            }
+        elif self.table_10:
+            payload_10_class = {}
+        else:
+            number_answer = 'all'
+            for numeral in self.answer_picture_edit.text():
+                try:
+                    if int(numeral) < 1 or int(numeral) > 8:
+                        number_answer = 'all'
+                        break
+                    else:
+                        number_answer += str(numeral)
+                except ValueError:
+                    number_answer = 'all'
+
+            payload_other = {
+                'number of task': self.number_of_task,
+                'text task': self.text_task.toPlainText(),
+                'options': names_perms,
+                'answer': self.answer_edit.text(),
+                'sectors circles': number_answer,
+                'explanation': self.explanation_edit.toPlainText()
+            }
+
+        self.task = {
+            '8-9 class': {'table 8-9 class': self.table_9, 'payload': payload_9_class},
+            '10-11 class': {'table 10-11 class': self.table_10, 'payload': payload_10_class},
+            'other': {'no table': self.no_table, 'payload': payload_other}
+        }
+
+        self.setWindowTitle('Preview')
+        self.new_task()
+
+    def teacher_option_final_window(self):
+        layout = QVBoxLayout()
+        title = QLabel(self.topic_edit.text())
+        fontTitle = QFont("Montserrat Medium", 20)
+        fontTitle.setBold(True)
+        title.setFont(fontTitle)
+        title.setAlignment(Qt.AlignCenter)
+
+        stack_task = QVBoxLayout()
+        stack_task.setSpacing(5)
+        stack_task.addStretch(1)
+        stack_task_text = QLabel('Добавленные задачи:')
+        stack_task_text.setFont(QFont("Montserrat Medium", 18))
+        stack_task_text.setAlignment(Qt.AlignCenter)
+        stack_task.addWidget(stack_task_text)
+        logging.info(self.teacher_tasks)
+        for item in self.teacher_tasks:
+            line = QHBoxLayout()
+            line.setSpacing(10)
+            frame = QFrame()
+            frame.setFrameShape(QFrame.Box)
+            task = QHBoxLayout()
+            task.addSpacing(5)
+            task_number = QLabel(f'Задание №{item["other"]["payload"]["number of task"]}')
+            task_number.setFont(QFont("Montserrat Medium", 14))
+            if len(item["other"]["payload"]['text task']) > 40:
+                task_text = QLabel(item["other"]["payload"]['text task'][:40] + '...')
+            else:
+                task_text = QLabel(item["other"]["payload"]['task text'])
+            task_text.setFont(QFont("Montserrat Medium", 14))
+            task_text.setStyleSheet('color: grey')
+            task.addWidget(task_number)
+            task.addWidget(task_text)
+            remove_button = QPushButton('Удалить')
+            remove_button.setStyleSheet("background-color: rgb(244, 29, 29)")
+            remove_button.clicked.connect(partial(self.delete_teacher_task, item["other"]["payload"]["number of task"]))
+            line.addLayout(task)
+            line.addWidget(remove_button)
+            line.setAlignment(Qt.AlignCenter)
+            stack_task.addLayout(line)
+
+        if len(self.teacher_tasks) < 20:
+            button_box = QHBoxLayout()
+            self.number_of_tasks_edit.setText(str(int(self.number_of_tasks_edit.text()) + 1))
+            add_button = QPushButton('Добавить задачу')
+            add_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            add_button.clicked.connect(self.teacher_option_task_usual)
+            button_box.addWidget(add_button)
+            button_box.setAlignment(Qt.AlignCenter)
+
+
+        number_of_option = QHBoxLayout()
+        number_of_option.setSpacing(10)
+        self.random_number = random.randint(100000, 999999)
+        number_of_option_text = QLabel(f'Номер варианта - {str(self.random_number)}')
+        number_of_option_text.setFont(QFont("Montserrat Medium", 14))
+        number_of_option_info = QLabel('(сохраните его для дальнейшего доступа)')
+        number_of_option_info.setFont(QFont("Montserrat Medium", 14))
+        number_of_option_info.setStyleSheet('color: grey')
+        number_of_option.addWidget(number_of_option_text)
+        number_of_option.addWidget(number_of_option_info)
+
+        buttons = QHBoxLayout()
+        buttons.setSpacing(10)
+        button_left_box = QHBoxLayout()
+        button_left = QPushButton('Не сохранять')
+        button_left.setStyleSheet("background-color: rgb(244, 29, 29)")
+        button_left.clicked.connect(self.not_save_teacger_option)
+        button_left_box.addWidget(button_left)
+        button_left_box.setAlignment(Qt.AlignLeft)
+        button_right = QPushButton('Сохранить')
+        button_right.setStyleSheet('background-color: rgb(140, 255, 0)')
+        button_right.clicked.connect(self.save_teacher_option)
+        buttons.addLayout(button_left_box)
+        buttons.addWidget(button_right)
+
+        layout.addWidget(title)
+        layout.addLayout(stack_task)
+        if len(self.teacher_tasks) < 20:
+            layout.addLayout(button_box)
+        layout.addLayout(number_of_option)
+        layout.addLayout(buttons)
+
+        self.delete_items_of_layout(self.layout())
+        if self.layout() is not None:
+            sip.delete(self.layout())
+
+        logging.info('Add layout in teacher option final window')
+        self.setLayout(layout)
+        self.adjustSize()
+
+    def save_teacher_option(self):
+        add_teacher_option(
+            number_option=self.random_number,
+            topic=self.topic_edit.text(),
+            name_teacher= user_information['payload']['name'] + ' ' + user_information['payload']['surname'] + ' ' +
+                          user_information['payload']['patronymic'],
+            number_of_circles=self.number_of_circles_combo.currentText(),
+            procent_to_5=self.procent_of_right_for_5.text(),
+            procent_to_4=self.procent_of_right_for_4.text(),
+            procent_to_3=self.procent_of_right_for_3.text(),
+            show_mark=self.check_box_mark.isChecked(),
+            tasks=self.teacher_tasks
+        )
+        QMessageBox.information(self, 'Спасибо', 'Ваш вариант успешно добавлен, спасибо!')
+        self.menu()
+
+    def not_save_teacger_option(self):
+        logging.info('Close event')
+        reply = QMessageBox.question(self, 'Message',
+                                     "Вы уверены, что не будете созранять ваш вариант?", QMessageBox.Yes |
+                                     QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            logging.info('User answer - YES')
+            logging.info('Close app')
+            self.menu()
+        else:
+            logging.info('User answer - NO')
+
+    def delete_teacher_task(self, number_of_task):
+        for item in self.teacher_tasks:
+            if int(item['other']['payload']['number of task']) == int(number_of_task):
+                self.teacher_tasks.remove(item)
+                break
+        self.number_of_task = number_of_task - 1
+        self.teacher_option_final_window()
 
     def task_button_click(self):
         sender = self.sender()
@@ -764,22 +1173,64 @@ class Main(QWidget):
         self.new_task()
 
     def new_task(self):
+        sender = self.sender().text()
         self.user_can_ask_a_question = True
-        self.number_of_task += 1
+        if sender != 'Окно задачи' and sender != 'Предпросмотр':
+            self.number_of_task += 1
         self.is_new_task = True
 
         grid = QGridLayout()
-
-        title = QLabel(f'Задача №{str(self.number_of_task)}')
+        if self.class_of_tasks == 'preview task':
+            title = QLabel('Окно задачи')
+        else:
+            title = QLabel(f'Задача №{str(self.number_of_task)}')
         fontTitle = QFont("Montserrat Medium", 20)
         fontTitle.setBold(True)
         title.setFont(fontTitle)
         title.setAlignment(Qt.AlignCenter)
 
-        if self.layout() is not None:
+        if self.class_of_tasks != 'preview task' and self.layout() is not None:
             procent_of_rigth = QLabel(f'Верно решёных - {str(self.right_tasks*100 // (self.number_of_task - 1))} %')
             procent_of_rigth.setFont(QFont("Montserrat Medium", 14))
-        if self.class_of_tasks == '6-7 класс':
+            grid.addWidget(procent_of_rigth, 0, 1)
+
+        if self.class_of_tasks == 'preview task':
+            if self.task['8-9 class']['table 8-9 class']:
+                self.info = self.task['8-9 class']['payload']
+                logging.info('Task Info: ' + str(self.info))
+                self.requests = {}
+                self.answer_photo = 'all'
+                text_task = self.get_text_task_8_9_class()
+
+            elif self.task['10-11 class']['table 10-11 class']:
+                self.info = self.task['10 -11 class']['payload']
+                logging.info('Task Info: ' + str(self.info))
+                text_task = self.get_text_task_10_11_class()
+            else:
+                self.info = self.task['other']['payload']
+                logging.info('Task Info: ' + str(self.info))
+                text_task_body_split = ''
+                number_of_letter = 0
+                spliter = self.info['text task']
+                while number_of_letter + 40 <= len(spliter) - 1:
+                    row_long = 40
+                    while spliter[number_of_letter + row_long] != ' ':
+                        row_long -= 1
+                        if row_long <= 0:
+                            break
+                    if number_of_letter < 0:
+                        text_task_body_split += spliter[0:number_of_letter + row_long] + '\n'
+                    else:
+                        text_task_body_split += spliter[number_of_letter:number_of_letter + row_long] + '\n'
+                    number_of_letter += row_long + 1
+                try:
+                    text_task_body_split += self.info['text task'][number_of_letter:]
+                except IndexError:
+                    pass
+                text_task = QLabel(text_task_body_split)
+                text_task.setFont(QFont("Montserrat Medium", 14))
+
+        elif self.class_of_tasks == '6-7 класс':
             QMessageBox.information(self, 'Внимание', 'Данная функция находится на стадии разработки.\n'
                                                       'Приносим извинения за неудобства.')
             self.menu()
@@ -816,27 +1267,48 @@ class Main(QWidget):
             self.answer_edit = QLineEdit()
             self.answer_edit.setPlaceholderText('Введите сюда ваш ответ (только число)')
 
-        buttons = QHBoxLayout()
-        buttons.setSpacing(10)
-        buttons.addStretch(1)
+        buttons_right = QHBoxLayout()
+        buttons_right.setSpacing(10)
+        buttons_right.addStretch(1)
         continue_button = QPushButton('Далее')
         continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
-        continue_button.clicked.connect(self.answer_task)
         exit_button = QPushButton('Завершить')
         exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
-        exit_button.clicked.connect(self.exit_button_click)
-        buttons.addWidget(exit_button)
-        buttons.addWidget(continue_button)
+        if self.class_of_tasks == 'preview task':
+            continue_button.clicked.connect(self.teacher_option_task_usual)
+            exit_button.clicked.connect(self.exit_button_click)
+        else:
+            continue_button.clicked.connect(self.answer_task)
+            exit_button.clicked.connect(self.exit_button_click)
+        buttons_right.addWidget(exit_button)
+        buttons_right.addWidget(continue_button)
+        if self.class_of_tasks == 'preview task':
+            buttons_left = QHBoxLayout()
+            buttons_left.setSpacing(60)
+            forward_button = QPushButton('Назад')
+            forward_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            forward_button.clicked.connect(self.teacher_option_task_usual)
+            answer_button = QPushButton('Окно ответа')
+            answer_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            answer_button.clicked.connect(self.answer_task)
+            buttons_left.addWidget(forward_button)
+            buttons_left.addWidget(answer_button)
 
         grid.addWidget(title, 0, 0)
 
-        grid.addLayout(text_task, 1, 0)
+        if self.class_of_tasks == 'preview task':
+            if self.task['other']['no table']:
+                grid.addWidget(text_task, 1, 0)
+            else:
+                grid.addLayout(text_task, 1, 0)
+            grid.addLayout(buttons_left, 2, 0)
+        else:
+            grid.addLayout(text_task, 1, 0)
+            grid.addWidget(self.answer_edit, 2, 0)
         grid.addWidget(self.overlay_photo('new', None), 1, 1)
-        grid.addWidget(self.answer_edit, 2, 0)
-        grid.addLayout(buttons, 2, 1)
+        grid.addLayout(buttons_right, 2, 1)
 
         if self.layout() is not None:
-            grid.addWidget(procent_of_rigth, 0, 1)
             self.delete_items_of_layout(self.layout())
             sip.delete(self.layout())
 
@@ -1009,41 +1481,48 @@ class Main(QWidget):
             return
 
         grid = QGridLayout()
+        if self.class_of_tasks == '10-11 класс':
+            try:
+                if int(self.answer_edit.text()) == self.info['answer']:
+                    logging.info('Right answer')
+                    title = QLabel('Верный ответ!')
+                    title.setStyleSheet("color: green")
+                    if self.is_new_task:
+                        self.right_tasks += 1
+                else:
+                    logging.info('Wrong answer')
+                    title = QLabel('Неправильный ответ!')
+                    title.setStyleSheet("color: red")
+                self.is_new_task = False
+                fontTitle = QFont("Montserrat Medium", 20)
+                fontTitle.setBold(True)
+                title.setFont(fontTitle)
+                title.setAlignment(Qt.AlignCenter)
+            except ValueError:
+                self.on_error('В ответе должно содержаться одно число -\nколичество страниц найденых по запросу')
+                return
 
-        try:
-            if int(self.answer_edit.text()) == self.info['answer']:
-                logging.info('Right answer')
-                title = QLabel('Верный ответ!')
-                title.setStyleSheet("color: green")
-                if self.is_new_task:
-                    self.right_tasks += 1
+
+            decision_status = QVBoxLayout()
+            decision_status.setSpacing(1)
+            decision_status.addStretch(1)
+            procent_of_right = self.right_tasks*100 // self.number_of_task
+            procent = QLabel(f'Верно решёных - {str(procent_of_right)} %')
+            procent.setFont(QFont("Montserrat Medium", 14))
+            result = QLabel('Оптимальный результат - более 90 %')
+            result.setFont(QFont("Montserrat Medium", 14))
+            if procent_of_right >= 90:
+                result.setStyleSheet("color: green")
             else:
-                logging.info('Wrong answer')
-                title = QLabel('Неправильный ответ!')
-                title.setStyleSheet("color: red")
-            self.is_new_task = False
+                result.setStyleSheet("color: red")
+            decision_status.addWidget(procent)
+            decision_status.addWidget(result)
+        else:
+            title = QLabel('Окно ответа')
             fontTitle = QFont("Montserrat Medium", 20)
             fontTitle.setBold(True)
             title.setFont(fontTitle)
             title.setAlignment(Qt.AlignCenter)
-        except ValueError:
-            self.on_error('В ответе должно содержаться одно число -\nколичество страниц найденых по запросу')
-            return
-
-        decision_status = QVBoxLayout()
-        decision_status.setSpacing(1)
-        decision_status.addStretch(1)
-        procent_of_right = self.right_tasks*100 // self.number_of_task
-        procent = QLabel(f'Верно решёных - {str(procent_of_right)} %')
-        procent.setFont(QFont("Montserrat Medium", 14))
-        result = QLabel('Оптимальный результат - более 90 %')
-        result.setFont(QFont("Montserrat Medium", 14))
-        if procent_of_right >= 90:
-            result.setStyleSheet("color: green")
-        else:
-            result.setStyleSheet("color: red")
-        decision_status.addWidget(procent)
-        decision_status.addWidget(result)
 
         explanation = ''
         number_of_letter = 0
@@ -1064,29 +1543,49 @@ class Main(QWidget):
         exp = QLabel(explanation)
         exp.setFont(QFont("Montserrat Medium", 14))
 
-        question_of_task = QLabel('Возник вопрос по заданию? Задайте его нам')
-        question_of_task.setFont(QFont("Montserrat Medium", 12))
-        question_of_task.setStyleSheet("text-decoration: underline; color: blue;")
-        question_of_task.mousePressEvent = self.question_button_click
+        if self.class_of_tasks == '10-11 класс':
+            question_of_task = QLabel('Возник вопрос по заданию? Задайте его нам')
+            question_of_task.setFont(QFont("Montserrat Medium", 12))
+            question_of_task.setStyleSheet("text-decoration: underline; color: blue;")
+            question_of_task.mousePressEvent = self.question_button_click
 
-        buttons = QHBoxLayout()
-        buttons.setSpacing(10)
-        buttons.addStretch(1)
+        buttons_right = QHBoxLayout()
+        buttons_right.setSpacing(10)
+        buttons_right.addStretch(1)
         continue_button = QPushButton('Продолжить')
         continue_button.setStyleSheet("background-color: rgb(63, 137, 255)")
-        continue_button.clicked.connect(self.new_task)
         exit_button = QPushButton('Завершить')
         exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
-        exit_button.clicked.connect(self.exit_button_click)
-        buttons.addWidget(exit_button)
-        buttons.addWidget(continue_button)
+        if self.class_of_tasks == 'preview task':
+            continue_button.clicked.connect(self.teacher_option_task_usual)
+            exit_button.clicked.connect(self.exit_button_click)
+        else:
+            continue_button.clicked.connect(self.new_task)
+            exit_button.clicked.connect(self.exit_button_click)
+        buttons_right.addWidget(exit_button)
+        buttons_right.addWidget(continue_button)
+        if self.class_of_tasks == 'preview task':
+            buttons_left = QHBoxLayout()
+            buttons_left.setSpacing(60)
+            forward_button = QPushButton('Назад')
+            forward_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            forward_button.clicked.connect(self.teacher_option_task_usual)
+            answer_button = QPushButton('Окно задачи')
+            answer_button.setStyleSheet("background-color: rgb(223, 209, 21)")
+            answer_button.clicked.connect(self.new_task)
+            buttons_left.addWidget(forward_button)
+            buttons_left.addWidget(answer_button)
 
         grid.addWidget(title, 0, 0)
-        grid.addLayout(decision_status, 0, 1)
         grid.addWidget(exp, 1, 0)
-        grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
-        grid.addWidget(question_of_task, 2, 0)
-        grid.addLayout(buttons, 2, 1)
+        grid.addLayout(buttons_right, 2, 1)
+        if self.class_of_tasks == '10-11 класс':
+            grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
+            grid.addLayout(decision_status, 0, 1)
+            grid.addWidget(question_of_task, 2, 0)
+        else:
+            grid.addWidget(self.overlay_photo('answer', self.info['sectors circles']), 1, 1)
+            grid.addLayout(buttons_left, 2, 0)
 
         if self.layout() is not None:
             self.delete_items_of_layout(self.layout())
@@ -1106,14 +1605,25 @@ class Main(QWidget):
 
     def exit_button_click(self):
         logging.info('Exit button click')
+        if self.class_of_tasks == 'preview task':
+            text = 'создание варианта'
+        else:
+            text = 'тестирование'
         reply = QMessageBox.question(self, 'Message',
-                                     "Вы уверены, что хотите завершить тестирование?", QMessageBox.Yes |
+                                     f"Вы уверены, что хотите завершить {text}?", QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             logging.info('User answer - YES')
-            logging.info('Return to menu')
-            self.menu()
+            if self.class_of_tasks == 'preview task':
+                if self.teacher_tasks_appended:
+                    self.teacher_tasks.append(self.task)
+                    self.teacher_tasks_appended = not self.teacher_tasks_appended
+                logging.info('Run to teacher option final window')
+                self.teacher_option_final_window()
+            else:
+                logging.info('Return to menu')
+                self.menu()
         else:
             logging.info('User answer - NO')
 
@@ -1207,7 +1717,7 @@ class Main(QWidget):
         self.setLayout(box)
 
     def overlay_photo(self, status_task, overlay):
-        if self.number_of_task % 9 != 1 or self.class_of_tasks != '10-11 класс':
+        if self.number_of_task % NUMBER_OF_TASKS_9_CLASS != 1 or self.class_of_tasks != '10-11 класс':
             if self.class_of_tasks == '10-11 класс':
                 names = [self.info['request'][i] for i in range(3)]
             else:
@@ -1217,7 +1727,7 @@ class Main(QWidget):
 
         if status_task == 'new':
             img = Image.open('photo/taskCircles/all.png')
-            if len(self.already_been) < 12:
+            if self.class_of_tasks != 'preview task' and len(self.already_been) < 12:
                 self.already_been += [names]
             else:
                 self.already_been = []
@@ -1237,13 +1747,18 @@ class Main(QWidget):
                     img.paste(sector, None, sector)
 
         draw = ImageDraw.Draw(img)
-        draw.text((65, 120), names[0], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
-        draw.text((250, 120), names[1], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+        draw.text((65, 120), names[0], fill=(0, 0, 0),
+                  font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+        draw.text((250, 120), names[1], fill=(0, 0, 0),
+                  font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
         if overlay == 'four_all' or overlay == 'four_center':
-            draw.text((65, 270), names[2], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
-            draw.text((250, 270), names[3], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+            draw.text((65, 270), names[2], fill=(0, 0, 0),
+                      font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+            draw.text((250, 270), names[3], fill=(0, 0, 0),
+                      font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
         else:
-            draw.text((150, 270), names[2], fill=(0, 0, 0), font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
+            draw.text((150, 270), names[2], fill=(0, 0, 0),
+                      font=ImageFont.truetype("fonts/Montserrat-Medium.ttf", 16))
 
         namePhoto = 'photo/taskCircles/newTask.png'
         img.save(namePhoto)
@@ -1310,9 +1825,10 @@ class Main(QWidget):
         QMessageBox().critical(self, 'Внимание!', e)
 
 
-def start_app():
+if __name__ == '__main__':
     app = QApplication(sys.argv)
 
+    logging.info('Start app')
     ex = Main()
 
     sys.exit(app.exec_())
