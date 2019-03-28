@@ -1,0 +1,1 @@
+<?php include_once("resources/templates/index.html"); ?>
