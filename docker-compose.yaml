@@ -1,7 +1,0 @@
-version: '3'
-services:
-  vk:
-   build: bot
-   environment:
-   - VK_TOKEN=6ccf486634bd961cd18148534d58c1d2cc892edfdb99c5197edb46c35c2735a8cad7ee8d5cf5e44e91e58
-   restart: always
