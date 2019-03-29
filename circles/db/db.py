@@ -125,14 +125,16 @@ def get_and_remove_all_data_in_collection(collection):
     return docs
 
 
-def add_teacher_option(number_option, name_teacher ,topic, number_of_circles, procent_to_5, procent_to_4, procent_to_3,
-                       show_mark, tasks):
+def add_teacher_option(number_option, open_access, name_teacher, email_teacher, topic, number_of_circles, procent_to_5,
+                       procent_to_4, procent_to_3, show_mark, tasks):
     option = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='teacher_option')
     logging.info('Add option to collection teacher_option')
 
     post = {
         'number_option': number_option,
+        'open_access': open_access,
         'name_teacher': name_teacher,
+        'email_teacher': email_teacher,
         'topic': topic,
         'number_of_circles': number_of_circles,
         'procent_to_5': procent_to_5,
@@ -145,14 +147,39 @@ def add_teacher_option(number_option, name_teacher ,topic, number_of_circles, pr
     logging.info('Insert post: ' + str(post))
     ins = option.insert_one(post)
     logging.info(f'Insert ID: {str(ins)}')
+    return True
 
 
-def get_teacher_option(number_option):
+def get_teacher_option(find_option):
     options = connect_to_database_and_get_a_collection(nameDB=nameDatabase, nameCollection='teacher_option')
     logging.info('Get option drom collection teacher_option')
 
-    for option in options.find():
-        if option['number_option'] == int(number_option):
-            return True, option
+    data = []
 
-    return False, {}
+    for option in options.find():
+        if find_option.isdigit():
+            if option['number_option'] == int(find_option):
+                data.append(option)
+        elif option['open_access']:
+            if (len(find_option.split()) == 2) and \
+                    (find_option.lower().split()[0] in option['name_teacher'].lower().split()) and \
+                    (find_option.lower().split()[1] in option['name_teacher'].lower().split()) and \
+                    find_option.lower().split()[0] != find_option.lower().split()[1]:
+                data.append(option)
+            elif len(find_option.lower().split()) == 3 and \
+                    ((find_option.lower().split()[0] in option['name_teacher'].lower().split() and
+                     find_option.lower().split()[1] in option['name_teacher'].lower().split()) or
+                     (find_option.lower().split()[0] in option['name_teacher'].lower().split() and
+                      find_option.lower().split()[2] in option['name_teacher'].lower().split()) or
+                     (find_option.lower().split()[1] in option['name_teacher'].lower().split() and
+                      find_option.lower().split()[2] in option['name_teacher'].lower().split())) and \
+                    find_option.lower().split()[0] != find_option.lower().split()[1] and \
+                    find_option.lower().split()[0] != find_option.lower().split()[2] and \
+                    find_option.lower().split()[1] != find_option.lower().split()[2]:
+                data.append(option)
+            elif option['email_teacher'].lower() == find_option.lower():
+                data.append(option)
+            elif option['topic'].lower() == find_option.lower():
+                data.append(option)
+
+    return data
