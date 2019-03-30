@@ -1,0 +1,9 @@
+sip
+smtplib
+logging
+PIL
+functools
+PyQt5
+pymongo
+openpyxl
+requests
