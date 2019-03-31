@@ -19,7 +19,8 @@ logging.basicConfig(
 
 user_information = {'success': False, 'payload': {}}
 NUMBER_OF_TASKS_9_CLASS = 15
-NUMBER_OF_TAKS_10_CSLASS = 9
+NUMBER_OF_TASKS_10_CLASS = 9
+
 EULERO_EMAIL = 'eulerocircles@gmail.com'
 EULERO_PASSWORD = 'xsw2zaq1'
 
@@ -517,9 +518,9 @@ class Main(QWidget):
         self.login()
 
     def get_teacher_option_button_click(self):
-        #if not user_information['success']:
-        #    self.on_error('Для испольования данной функции\nВы должны быть зарегестрированны')
-        #    return
+        if not user_information['success']:
+            self.on_error('Для испольования данной функции\nВы должны быть зарегестрированны')
+            return
         try:
             options = get_teacher_option(self.teacher_option_edit.text())
         except Exception as e:
@@ -825,7 +826,7 @@ class Main(QWidget):
 
             line_view_button = QPushButton('Просмотр')
             line_view_button.setStyleSheet("background-color: rgb(223, 209, 21)")
-            #line_view_button.clicked.connect()
+            line_view_button.clicked.connect(partial(self.get_teacher_task_final_view, number_of_task - 1))
 
             line.addLayout(line_content)
             line.addWidget(line_view_button)
@@ -880,10 +881,15 @@ class Main(QWidget):
         self.setLayout(layout)
         self.adjustSize()
 
+    def get_teacher_task_final_view(self, number_task):
+        self.task = self.option['tasks'][number_task]
+        self.class_of_tasks = 'final preview task'
+        self.new_task()
+
     def create_teacher_option(self):
-        #if not user_information['success']:
-        #    self.on_error('Для испольования данной функции\nВы должны быть зарегестрированны')
-        #    return
+        if not user_information['success']:
+            self.on_error('Для испольования данной функции\nВы должны быть зарегестрированны')
+            return
         self.delete_items_of_layout(self.layout())
         if self.layout() is not None:
             sip.delete(self.layout())
@@ -1170,6 +1176,32 @@ class Main(QWidget):
             find.setFont(QFont('Montserrat Medium', 14))
             table.addWidget(request, 0, 0)
             table.addWidget(find, 0, 1)
+            if sender == 'Назад':
+                text = [i.text() for i in self.table_tasks]
+                number = [i.text() for i in self.table_circles_numbers]
+            else:
+                text = ['', '', '', '', '', '']
+                number = ['', '', '', '', '', '']
+            self.table_tasks = []
+            self.table_circles_numbers = []
+            for i in range(6):
+                line_edit = QLineEdit()
+                line_edit.setPlaceholderText('Запрос')
+                line_edit.setText(text[i])
+                self.table_tasks.append(line_edit)
+                line_sectors_edit = QLineEdit()
+                line_sectors_edit.setPlaceholderText('Найдено страниц')
+                line_sectors_edit.setText(number[i])
+                self.table_circles_numbers.append(line_sectors_edit)
+                table.addWidget(line_edit, i + 1, 0)
+                table.addWidget(line_sectors_edit, i + 1, 1)
+
+            question = QLabel('Найти: ')
+            question.setFont(QFont('Montserrat Medium', 14))
+            self.question_text_edit = QLineEdit()
+            self.question_text_edit.setPlaceholderText('Вопрос')
+            table.addWidget(question, 7, 0)
+            table.addWidget(self.question_text_edit, 7, 1)
         else:
             if sender == 'Назад':
                 text = self.text_task.toPlainText()
@@ -1392,7 +1424,42 @@ class Main(QWidget):
                 'explanation': self.explanation_edit.toPlainText()
             }
         elif self.table_10:
-            payload_10_class = {}
+            requests = []
+            finds = []
+
+            if self.question_text_edit.text() == '':
+                self.on_error('Введите то, что нужно найти')
+                return
+
+            for i in range(6):
+                if self.table_tasks[i].text() != '':
+                    requests.append(self.table_tasks[i].text())
+                    if self.table_circles_numbers[1].text() != '':
+                        finds.append(self.table_circles_numbers[i].text())
+                    else:
+                        self.on_error('Введите количество найденных страниц для запроса')
+                        return
+
+            if len(requests) < 3:
+                self.on_error('Введите больше запросов')
+                return
+
+            text_task = ''
+            for request, find in zip(requests, finds):
+                text_task += request + ' ' + find + '; '
+
+            payload_10_class = {
+                'number of task': self.number_of_task,
+                'text task': f'А: {self.table_tasks[0].text()} Б: {self.table_tasks[1].text()} '
+                             f'В: {self.table_tasks[2].text()} Г: {self.table_tasks[3].text()}',
+                'request': requests,
+                'find': finds,
+                'options': names_perms,
+                'question': f'{self.question_text_edit.text()};{self.answer_picture_edit.text()}',
+                'answer': self.answer_edit.text(),
+                'sectors circles': None,
+                'explanation': self.explanation_edit.toPlainText()
+            }
         else:
             number_answer = ''
             for numeral in self.answer_picture_edit.text():
@@ -1652,7 +1719,8 @@ class Main(QWidget):
             procent_of_rigth.setFont(QFont("Montserrat Medium", 14))
             grid.addWidget(procent_of_rigth, 0, 1)
 
-        if self.class_of_tasks == 'preview task' or self.class_of_tasks == 'teacher task':
+        if self.class_of_tasks == 'preview task' or self.class_of_tasks == 'final preview task' or \
+                self.class_of_tasks == 'teacher task':
             if self.task['8-9 class']['table 8-9 class']:
                 self.info = self.task['8-9 class']['payload']
                 logging.info('Task Info: ' + str(self.info))
@@ -1661,10 +1729,12 @@ class Main(QWidget):
                 text_task = self.get_text_task_8_9_class()
 
             elif self.task['10-11 class']['table 10-11 class']:
-                self.info = self.task['10 -11 class']['payload']
+                logging.info('10-11 class')
+                self.info = self.task['10-11 class']['payload']
                 logging.info('Task Info: ' + str(self.info))
                 text_task = self.get_text_task_10_11_class()
             else:
+                logging.info('other')
                 self.info = self.task['other']['payload']
                 logging.info('Task Info: ' + str(self.info))
                 text_task_body_split = ''
@@ -1737,6 +1807,9 @@ class Main(QWidget):
         if self.class_of_tasks == 'preview task':
             continue_button.clicked.connect(self.before_teacher_option_task_usual)
             exit_button.clicked.connect(self.before_exit_button_click)
+        elif self.class_of_tasks == 'final preview task':
+            continue_button.clicked.connect(self.answer_task)
+            exit_button.clicked.connect(self.get_teacher_option_final_window)
         else:
             continue_button.clicked.connect(self.answer_task)
             exit_button.clicked.connect(self.exit_button_click)
@@ -1756,14 +1829,15 @@ class Main(QWidget):
 
         grid.addWidget(title, 0, 0)
 
-        if self.class_of_tasks == 'preview task' or self.class_of_tasks == 'teacher task':
+        if self.class_of_tasks == 'preview task' or self.class_of_tasks == 'final preview task' \
+                or self.class_of_tasks == 'teacher task':
             if self.task['other']['no table']:
                 grid.addWidget(text_task, 1, 0)
             else:
                 grid.addLayout(text_task, 1, 0)
             if self.class_of_tasks == 'preview task':
                 grid.addLayout(buttons_left, 2, 0)
-            else:
+            elif self.class_of_tasks != 'final preview task':
                 grid.addWidget(self.answer_edit, 2, 0)
         else:
             grid.addLayout(text_task, 1, 0)
@@ -1831,7 +1905,8 @@ class Main(QWidget):
 
     def answer_task(self):
         if self.class_of_tasks == '8-9 класс' or \
-                ((self.class_of_tasks == 'preview task' or self.class_of_tasks == 'teacher task') and
+                ((self.class_of_tasks == 'preview task' or self.class_of_tasks == 'final preview task'
+                  or self.class_of_tasks == 'teacher task') and
                  self.task['8-9 class']['table 8-9 class']):
             self.answer_task_9()
         else:
@@ -1884,7 +1959,8 @@ class Main(QWidget):
 
         explanation_block = QVBoxLayout()
         explanation_block.setSpacing(10)
-        if self.class_of_tasks == 'preview task' and not self.info['auth explanation']:
+        if (self.class_of_tasks == 'preview task' or self.class_of_tasks == 'final preview task') \
+                and not self.info['auth explanation']:
             explanation = ''
             number_of_letter = 0
             text_explanation = self.info['explanation']
@@ -1936,7 +2012,7 @@ class Main(QWidget):
             end.setAlignment(Qt.AlignCenter)
             explanation_block.addWidget(end)
 
-        if self.class_of_tasks != 'preview task':
+        if self.class_of_tasks != 'preview task' and self.class_of_tasks != 'final preview task':
             question_of_task = QLabel('Возник вопрос по заданию? Задайте его нам')
             question_of_task.setFont(QFont("Montserrat Medium", 12))
             question_of_task.setStyleSheet("text-decoration: underline; color: blue;")
@@ -1952,6 +2028,9 @@ class Main(QWidget):
         if self.class_of_tasks == 'preview task':
             continue_button.clicked.connect(self.before_teacher_option_task_usual)
             exit_button.clicked.connect(self.exit_button_click)
+        elif self.class_of_tasks == 'final preview task':
+            continue_button.clicked.connect(self.get_teacher_option_final_window)
+            exit_button.clicked.connect(self.get_teacher_option_final_window)
         else:
             if self.class_of_tasks == 'teacher task':
                 continue_button.clicked.connect(self.get_teacher_tasks)
@@ -1976,10 +2055,10 @@ class Main(QWidget):
         grid.addLayout(explanation_block, 1, 0)
         grid.addLayout(buttons_right, 2, 1)
         grid.addWidget(self.overlay_photo('answer', self.answer_photo), 1, 1)
-        if self.class_of_tasks != 'preview task':
+        if self.class_of_tasks != 'preview task' and self.class_of_tasks != 'final preview task':
             grid.addLayout(decision_status, 0, 1)
             grid.addWidget(question_of_task, 2, 0)
-        else:
+        elif self.class_of_tasks != 'final preview window':
             grid.addLayout(buttons_left, 2, 0)
 
         if self.layout() is not None:
@@ -2071,8 +2150,11 @@ class Main(QWidget):
         exit_button = QPushButton('Завершить')
         exit_button.setStyleSheet("background-color: rgb(244, 29, 29)")
         if self.class_of_tasks == 'preview task':
-            continue_button.clicked.connect(self.teacher_option_task_usual)
+            continue_button.clicked.connect(self.before_teacher_option_task_usual)
             exit_button.clicked.connect(self.exit_button_click)
+        elif self.class_of_tasks == 'final preview task':
+            continue_button.clicked.connect(self.get_teacher_option_final_window)
+            exit_button.clicked.connect(self.get_teacher_option_final_window)
         else:
             if self.class_of_tasks == 'teacher task':
                 continue_button.clicked.connect(self.get_teacher_tasks)
@@ -2098,13 +2180,21 @@ class Main(QWidget):
         grid.addLayout(buttons_right, 2, 1)
         if self.class_of_tasks != 'preview task':
             if self.class_of_tasks == 'teacher task':
-                grid.addWidget(self.overlay_photo('answer', self.info['sectors circles']), 1, 1)
+                if self.task['10-11 class']['table 10-11 class']:
+                    grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
+                else:
+                    grid.addWidget(self.overlay_photo('answer', self.info['sectors circles']), 1, 1)
             else:
                 grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
-            grid.addLayout(decision_status, 0, 1)
-            grid.addWidget(question_of_task, 2, 0)
+
+            if self.class_of_tasks != 'final preview task':
+                grid.addLayout(decision_status, 0, 1)
+                grid.addWidget(question_of_task, 2, 0)
         else:
-            grid.addWidget(self.overlay_photo('answer', self.info['sectors circles']), 1, 1)
+            if self.task['10-11 class']['table 10-11 class']:
+                grid.addWidget(self.overlay_photo('answer', self.number_question), 1, 1)
+            else:
+                grid.addWidget(self.overlay_photo('answer', self.info['sectors circles']), 1, 1)
             grid.addLayout(buttons_left, 2, 0)
 
         if self.layout() is not None:
